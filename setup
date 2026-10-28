@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Change the display's settings (sheet, robot key, calendar, Linktree), then restart it.
+cd "$(dirname "$0")"
+.venv/bin/python -m server.configure --all </dev/tty
+systemctl --user restart compe-display 2>/dev/null && echo "Display restarted — it will update in a few seconds."

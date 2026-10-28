@@ -10,9 +10,18 @@ Open **Terminal** on the club computer (Ubuntu), paste this line, and press Ente
 curl -fsSL https://raw.githubusercontent.com/Choc-Shake/compe-display/main/install.sh | bash
 ```
 
-It will ask for your password, then three questions. You can press Enter to skip any of them and fill them in later. Skipped items show sample data.
+It will ask for your password, then walk you through setup:
+- **Robot key:** if the robot's `.json` file is in your Downloads folder it finds it for you; otherwise drag the file into the Terminal window.
+- **Snack sheet:** paste the spreadsheet's link straight from your browser.
+- **Calendar:** paste the club calendar's secret iCal address.
 
-To update the display later, run the same line again.
+At the end it tests the spreadsheet and tells you in plain words what's wrong if it can't connect (for example, if the sheet hasn't been shared with the robot yet).
+
+Press Enter to skip anything; that part shows sample data until you fill it in.
+
+**Change settings later:** run `~/compe-display/setup` in Terminal.
+
+To update the display later, run the same install line again.
 
 ## 2. Let the display read the snack sheet
 
@@ -30,25 +39,13 @@ The display uses its own Google "robot" account that can **only read** the sheet
 1. Copy the robot's email address. It looks like `snack-display@compe-display.iam.gserviceaccount.com`.
 2. Ask whoever owns the snack spreadsheet to click **Share**, paste that email in, set it to **Viewer**, and uncheck "Notify".
 
-**Tell the display which sheet:** the sheet ID is the long code in its web address:
-`docs.google.com/spreadsheets/d/`**`THIS-LONG-CODE`**`/edit`
-Put it in `~/compe-display/config.toml` next to `id =` if you skipped it during install.
+Then run `~/compe-display/setup` and paste the sheet link when it asks.
 
 > Only the Item, Sell Price, Stock, Low Stock At and Units Sold columns are read. Cost, profit and exec-taken never appear on screen.
 
 ## 3. Connect the club calendar
 
-1. Open Google Calendar, then go to the club calendar's **⋮ → Settings and sharing**.
-2. Scroll to **Secret address in iCal format** and copy it.
-3. Paste it into `config.toml` next to `ical_url =`.
-
-## 4. Apply changes
-
-After editing `config.toml`, restart the display server with this command in Terminal:
-
-```bash
-systemctl --user restart compe-display
-```
+In Google Calendar, open the club calendar's **⋮ → Settings and sharing** and copy **Secret address in iCal format**. Paste it when setup asks.
 
 ## Handy things
 

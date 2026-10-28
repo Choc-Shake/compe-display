@@ -31,18 +31,8 @@ say "Setting up Python"
 .venv/bin/pip install -q --upgrade pip
 .venv/bin/pip install -q -r requirements.txt
 
-if [ ! -f config.toml ]; then
-  say "A few questions (press Enter to skip any — the display will show sample data for it)"
-  # read from the terminal even when this script is piped from curl
-  ask() { local v; read -r -p "$1: " v </dev/tty || true; printf '%s' "$v"; }
-  SHEET_ID="$(ask "Google Sheet ID (from its URL)")"
-  ICAL="$(ask "Google Calendar secret iCal address")"
-  LINK="$(ask "Linktree URL [https://linktr.ee/compeclub]")"
-  sed -e "s#^id = \"\"#id = \"$SHEET_ID\"#" \
-      -e "s#^ical_url = \"\"#ical_url = \"$ICAL\"#" \
-      -e "s#^linktree = .*#linktree = \"${LINK:-https://linktr.ee/compeclub}\"#" \
-      config.example.toml > config.toml
-fi
+say "Setup questions (press Enter to skip any — it'll show sample data until it's filled in)"
+.venv/bin/python -m server.configure </dev/tty
 
 say "Starting the display server (runs automatically from now on)"
 mkdir -p "$HOME/.config/systemd/user"
@@ -89,6 +79,5 @@ cat <<EOF
   • Full screen:   log out and back in (or restart) — it opens by itself
   • Exit kiosk:    press Alt+F4
   • Turn screen:   Settings → Displays → Orientation → Portrait
-  • Settings file: $DIR/config.toml   (restart: systemctl --user restart compe-display)
-  • Snack sheet:   put the robot key at $DIR/robot-key.json — see SETUP.md
+  • Change settings later:   ~/compe-display/setup
 EOF
