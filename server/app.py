@@ -150,19 +150,31 @@ def refresher(key, fn, every):
 for key, fn, every in SOURCES:
     threading.Thread(target=refresher, args=(key, fn, every), daemon=True).start()
 
+# Changes whenever the page files change; the open display reloads itself when it sees a new value.
+VERSION = str(max(int(f.stat().st_mtime) for f in (ROOT / "static").rglob("*") if f.is_file()))
+
 app = FastAPI()
+
+
+@app.middleware("http")
+async def no_cache(request, call_next):
+    # Kiosk browsers otherwise keep showing an old copy of the page after an update.
+    resp = await call_next(request)
+    if not request.url.path.startswith("/fonts/"):
+        resp.headers["Cache-Control"] = "no-store"
+    return resp
 
 
 @app.get("/api/state")
 def state():
-    return {k: v for k, v in STATE.items() if v is not None}
+    return {k: v for k, v in STATE.items() if v is not None} | {"version": VERSION}
 
 
 @app.get("/qr.svg")
 def qr():
     buf = io.BytesIO()
     segno.make(LINKTREE, error="m").save(buf, kind="svg", scale=10, border=1, dark="#1a0b2e")
-    return Response(buf.getvalue(), media_type="image/svg+xml", headers={"Cache-Control": "max-age=3600"})
+    return Response(buf.getvalue(), media_type="image/svg+xml")
 
 
 app.mount("/", StaticFiles(directory=ROOT / "static", html=True), name="static")
