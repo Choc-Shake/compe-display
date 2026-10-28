@@ -718,7 +718,7 @@ async function poll(){
 let partyUntil = 0;
 function party(){
   if (Date.now() < partyUntil) return;
-  partyUntil = Date.now() + 3000;
+  partyUntil = Date.now() + 4200;
   const layer = document.createElement("div");
   layer.style.cssText = "position:absolute;inset:0";
   for (let i = 0; i < 160; i++){
@@ -728,11 +728,11 @@ function party(){
     p.style.cssText =
       `left:${Math.random() * 1200}px;width:${strip ? sz * .5 : sz}px;height:${strip ? sz * 1.8 : sz}px;` +
       `background:${CONFETTI_COLORS[i % CONFETTI_COLORS.length]};--sway:${(Math.random() - .5) * 240}px;` +
-      `--r:${(Math.random() - .5) * 1080}deg;animation-duration:${1.6 + Math.random() * .9}s;animation-delay:${Math.random() * .6}s`;
+      `--r:${(Math.random() - .5) * 1080}deg;animation-duration:${1.6 + Math.random() * .9}s;animation-delay:${Math.random() * 1.8}s`;
     layer.appendChild(p);
   }
   $("fx").appendChild(layer);
-  setTimeout(() => layer.remove(), 3300);
+  setTimeout(() => layer.remove(), 4500);
   cheer(CHEERS[Math.floor(Math.random() * CHEERS.length)]);
 }
 addEventListener("keydown", e => { if (e.key.toLowerCase() === "s") party(); });
