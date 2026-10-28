@@ -276,6 +276,7 @@ body{font-family:var(--body);color:var(--ink);-webkit-font-smoothing:antialiased
   <section class="panel menu">
     <div class="ph">
       <h2>&#9654; SNACK SELECT</h2>
+      <span class="tag ghost" id="sync"></span>
     </div>
     <div class="cols"><div>ITEM</div><div>PRICE</div><div>LEFT</div><div>STOCK</div></div>
     <div class="list" id="menu"></div>
@@ -653,7 +654,16 @@ function detectSales(oldD, newD){
     .filter(s => before.has(s.item) && s.stock < before.get(s.item))
     .map(s => ({ item: s.item, qty: before.get(s.item) - s.stock }));
 }
+function renderSync(data){
+  const el = $("sync");
+  if (!data.source){ el.textContent = "SAMPLE DATA"; return; }
+  const ago = Math.max(0, Math.round(Date.now() / 1000 - data.updated));
+  const ok = data.source === "sheet" && ago < 120;
+  el.textContent = data.source === "sheet" ? `SHEET \u00b7 SYNCED ${ago < 60 ? ago + "S" : Math.round(ago / 60) + "M"} AGO` : "SAMPLE DATA";
+  el.style.color = ok ? "var(--teal)" : "var(--amber)";
+}
 function render(data){
+  renderSync(data);
   const sales = detectSales(prev, data);
   renderMenu(data.snacks || []);
   renderWeather(data.weather);
@@ -700,16 +710,17 @@ async function poll(){
   } catch (e) { /* keep showing last good data */ }
 }
 
-// Hidden debug key: "S" simulates a random sale
-addEventListener("keydown", e => {
-  if (e.key.toLowerCase() !== "s" || !prev) return;
-  const next = structuredClone(prev);
-  const pool = next.snacks.filter(s => s.stock > 0);
-  if (!pool.length) return;
-  const pick = pool[Math.floor(Math.random() * pool.length)];
-  pick.stock -= 1; pick.sold += 1;
-  render(next);
-});
+// Hidden key: "S" throws a party: waves of confetti across the whole screen, no stock change
+let partyUntil = 0;
+function party(){
+  if (Date.now() < partyUntil) return;
+  partyUntil = Date.now() + 5000;
+  for (let k = 0; k < 8; k++) setTimeout(() => {
+    confetti(0, 300 + Math.random() * 1400, 1200);
+    if (k % 3 === 0) cheer(CHEERS[Math.floor(Math.random() * CHEERS.length)]);
+  }, k * 550);
+}
+addEventListener("keydown", e => { if (e.key.toLowerCase() === "s") party(); });
 
 addEventListener("resize", fit);
 fit(); makeStars();

@@ -125,7 +125,8 @@ def fetch_weather():
 
 # ---------- Background refresh ----------
 
-STATE = {"snacks": [], "events": [], "weather": None, "linktree": LINKTREE}
+STATE = {"snacks": [], "events": [], "weather": None, "linktree": LINKTREE,
+         "source": "sheet" if SHEET.get("id") else "sample", "updated": None}
 SOURCES = [  # (key, fetcher, seconds between refreshes)
     ("snacks", fetch_snacks, SHEET.get("refresh_seconds", 30)),
     ("events", fetch_events, 600),
@@ -137,6 +138,8 @@ def refresher(key, fn, every):
     while True:
         try:
             STATE[key] = fn()
+            if key == "snacks":
+                STATE["updated"] = time.time()  # shown on screen as "synced Xs ago"
         except Exception as e:  # keep last good data on any failure
             print(f"[{key}] refresh failed: {e}", flush=True)
             time.sleep(min(every, 60))
