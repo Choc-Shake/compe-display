@@ -5,7 +5,6 @@
 id = ""                      # the long code in the sheet's URL: docs.google.com/spreadsheets/d/<THIS PART>/edit
 tab = "Inventory"         # tab name; empty = first tab
 key_file = "robot-key.json"  # the robot account's key file, placed in this folder
-refresh_seconds = 30
 
 [calendar]
 ical_url = ""                # Google Calendar > Settings > "Secret address in iCal format"

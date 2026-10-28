@@ -24,7 +24,7 @@ body{font-family:var(--body);color:var(--ink);-webkit-font-smoothing:antialiased
   position:absolute;left:50%;top:50%;width:1200px;height:1920px;
   transform:translate(-50%,-50%) scale(var(--s,1));
   display:grid;grid-template-columns:1fr 1fr;
-  grid-template-rows:150px 1110px 300px 200px 64px;
+  grid-template-rows:150px 1072px 300px 200px 102px;
   gap:14px;padding:20px;overflow:hidden;
   background:
     linear-gradient(rgba(164,107,255,.07) 1px, transparent 1px) 0 0/40px 40px,
@@ -56,6 +56,10 @@ body{font-family:var(--body);color:var(--ink);-webkit-font-smoothing:antialiased
 .tag{font-family:var(--pixel);font-size:12px;color:var(--bg);background:var(--acc);padding:7px 9px;border-radius:6px;
   box-shadow:3px 3px 0 rgba(0,0,0,.5)}
 .tag.ghost{background:transparent;color:var(--dim);border:2px solid var(--line);box-shadow:none}
+.sync{width:14px;height:14px;border-radius:50%;margin-right:6px;flex:none;background:transparent}
+.sync.ok{background:#3dff7a;box-shadow:0 0 10px #3dff7a;animation:led 1.6s ease-in-out infinite alternate}
+.sync.stale{background:var(--amber)}
+.sync.err{background:var(--red)}
 .blink{animation:blink 1.1s steps(2,start) infinite}
 @keyframes blink{to{visibility:hidden}}
 
@@ -162,6 +166,22 @@ body{font-family:var(--body);color:var(--ink);-webkit-font-smoothing:antialiased
 .fall:nth-of-type(2){animation-delay:.6s}.fall:nth-of-type(3){animation-delay:1.2s}
 @keyframes fall{from{transform:translateY(-4px);opacity:0}30%{opacity:1}to{transform:translateY(8px);opacity:0}}
 .drift{animation:drift 5s ease-in-out infinite alternate}
+.w-snow{animation:wSnow 2.2s linear infinite}
+@keyframes wSnow{0%{transform:translate(0,0);opacity:0}15%{opacity:1}50%{transform:translate(4px,10px)}85%{opacity:1}100%{transform:translate(-2px,20px);opacity:0}}
+.w-rain{animation:wRain .75s linear infinite}
+@keyframes wRain{0%{transform:translate(0,0);opacity:0}20%{opacity:1}100%{transform:translate(-4px,18px);opacity:0}}
+.w-drizzle{animation:wRain 1.4s linear infinite}
+.w-bolt{animation:wBolt 3.2s infinite}
+@keyframes wBolt{0%,80%,100%{opacity:0}82%,86%{opacity:1}84%{opacity:.2}}
+.w-float{animation:wFloat 4s ease-in-out infinite alternate}
+.w-float2{animation:wFloat 5s ease-in-out infinite alternate-reverse}
+@keyframes wFloat{from{transform:translateX(-3px)}to{transform:translateX(4px)}}
+.w-gust{stroke-dasharray:60 120;animation:wGust 2s linear infinite}
+@keyframes wGust{from{stroke-dashoffset:60}to{stroke-dashoffset:-120}}
+.w-fog{animation:wFog 3s ease-in-out infinite alternate}
+@keyframes wFog{from{transform:translateX(-5px);opacity:.5}to{transform:translateX(5px);opacity:1}}
+.w-glow{transform-box:fill-box;transform-origin:center;animation:wGlow 2.5s ease-in-out infinite alternate}
+@keyframes wGlow{from{transform:scale(.92)}to{transform:scale(1.06)}}
 @keyframes drift{from{transform:translateX(-2px)}to{transform:translateX(3px)}}
 
 /* ---------- QR ---------- */
@@ -188,17 +208,15 @@ body{font-family:var(--body);color:var(--ink);-webkit-font-smoothing:antialiased
   font-family:var(--pixel);font-size:12px;color:var(--faint)}
 
 /* ---------- Ticker ---------- */
-.ticker{grid-column:1/-1;display:flex;align-items:stretch;border-radius:18px;overflow:hidden;position:relative;z-index:1;
-  background:#0b0416;border:2px solid var(--line)}
-.tk-view{flex:1;overflow:hidden;position:relative;
-  -webkit-mask:linear-gradient(90deg,transparent,#000 40px,#000 calc(100% - 40px),transparent)}
-.tk-track{position:absolute;left:0;top:0;bottom:0;display:flex;align-items:center;white-space:nowrap;
-  transform:translateX(var(--from,1200px));will-change:transform}
-.tk-track.run{animation:scroll var(--dur,60s) linear 1 forwards}
-@keyframes scroll{from{transform:translateX(var(--from))}to{transform:translateX(-100%)}}
-.tk-item{font-size:28px;font-weight:600;padding-right:26px}
-.tk-item b{font-family:var(--pixel);font-size:14px;font-weight:400;margin-right:12px;vertical-align:3px}
-.tk-sep{color:var(--violet);padding-right:26px;font-size:22px}
+.ticker{grid-column:1/-1;display:flex;align-items:center;justify-content:center;border-radius:18px;overflow:hidden;position:relative;z-index:1;
+  background:#0b0416;border:2px solid var(--line);padding:0 34px}
+.tk-item{width:100%;text-align:center;font-size:34px;font-weight:600;line-height:1.15;transform:translateX(-130%);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tk-item b{font-family:var(--pixel);font-size:17px;font-weight:400;margin-right:16px;vertical-align:5px}
+.tk-item.in{animation:tkIn .8s cubic-bezier(.2,.9,.3,1.08) forwards}
+.tk-item.out{animation:tkOut .7s cubic-bezier(.6,0,.9,.4) forwards}
+@keyframes tkIn{from{transform:translateX(-130%)}to{transform:translateX(0)}}
+@keyframes tkOut{from{transform:translateX(0)}to{transform:translateX(130%)}}
 .c-g{color:#7fe08a}.c-y{color:var(--yellow)}.c-r{color:var(--red)}.c-a{color:var(--amber)}.c-t{color:var(--teal)}.c-p{color:var(--pink)}
 
 /* ---------- Sale FX ---------- */
@@ -278,7 +296,7 @@ body{font-family:var(--body);color:var(--ink);-webkit-font-smoothing:antialiased
   <section class="panel menu">
     <div class="ph">
       <h2>&#9654; SNACK SELECT</h2>
-      <span class="tag ghost" id="sync"></span>
+      <span class="sync" id="sync" title="sheet sync"></span>
     </div>
     <div class="cols"><div>ITEM</div><div>PRICE</div><div>LEFT</div><div>STOCK</div></div>
     <div class="list" id="menu"></div>
@@ -311,7 +329,7 @@ body{font-family:var(--body);color:var(--ink);-webkit-font-smoothing:antialiased
 
   <!-- 7. TICKER -->
   <div class="ticker">
-    <div class="tk-view"><div class="tk-track" id="ticker"></div></div>
+    <div class="tk-item" id="ticker"></div>
   </div>
 
   <div class="fx" id="fx"></div>
@@ -354,54 +372,134 @@ const DATA = {
       { day: "Fri", tempC: 4,  condition: "Sunny" }
     ]
   },
-  // Ticker library: strings, or { tag, text }. Shuffled and cycled in batches.
-  ticker: [
-    { tag: "UALBERTA", text: "The University of Alberta was founded in 1908; Henry Marshall Tory was its first president." },
-    { tag: "UALBERTA", text: "UAlberta's first classes were held in 1908 at Queen Alexandra School in Strathcona." },
-    { tag: "UALBERTA", text: "The university motto, \"Quaecumque vera\", means \"Whatsoever things are true\"." },
-    { tag: "UALBERTA", text: "Rutherford Library is named after Alexander Rutherford, Alberta's first premier and a founder of the university." },
-    { tag: "UALBERTA", text: "UAlberta researchers solved checkers in 2007: their program Chinook can never lose." },
-    { tag: "UALBERTA", text: "UAlberta's Cepheus essentially solved heads-up limit Texas hold'em poker in 2015." },
-    { tag: "UALBERTA", text: "DeepStack, built at UAlberta, beat professional poker players at no-limit hold'em in 2017." },
-    { tag: "UALBERTA", text: "UAlberta professor Richard Sutton, a pioneer of reinforcement learning, shared the 2024 Turing Award." },
-    { tag: "UALBERTA", text: "Amii, the Alberta Machine Intelligence Institute, is one of Canada's three national AI institutes." },
-    { tag: "UALBERTA", text: "UAlberta biochemist James Collip helped purify insulin for the first human patients in 1922." },
-    { tag: "UALBERTA", text: "The Edmonton Protocol for islet transplantation was developed at UAlberta around 2000." },
-    { tag: "UALBERTA", text: "Ex-Alta 1, built by UAlberta's AlbertaSat team, was Alberta's first satellite (2017)." },
-    { tag: "UALBERTA", text: "The Butterdome (Universiade Pavilion) was built for the 1983 World University Games." },
-    { tag: "TECH", text: "The first computer \"bug\" was a real moth taped into the Harvard Mark II logbook in 1947." },
-    { tag: "TECH", text: "The Apollo Guidance Computer ran at about 1 MHz with roughly 4 KB of RAM." },
-    { tag: "TECH", text: "The first transistor was demonstrated at Bell Labs in 1947." },
-    { tag: "TECH", text: "Jack Kilby built the first integrated circuit at Texas Instruments in 1958." },
-    { tag: "TECH", text: "The Intel 4004 (1971), the first commercial microprocessor, had about 2,300 transistors." },
-    { tag: "TECH", text: "Gordon Moore made his famous transistor-doubling prediction in 1965." },
-    { tag: "TECH", text: "The 555 timer IC, introduced in 1972, is one of the most-produced chips ever." },
-    { tag: "TECH", text: "The 6502 CPU powered the Apple II, and a variant ran the NES." },
-    { tag: "TECH", text: "ARM originally stood for Acorn RISC Machine." },
-    { tag: "TECH", text: "RISC-V, the open instruction set, started at UC Berkeley in 2010." },
-    { tag: "TECH", text: "ENIAC weighed about 30 tonnes and filled a large room." },
-    { tag: "TECH", text: "Ada Lovelace published what's considered the first algorithm, for Babbage's Analytical Engine, in 1843." },
-    { tag: "TECH", text: "Grace Hopper wrote one of the first compilers, A-0, in 1952." },
-    { tag: "TECH", text: "Richard Hamming invented his error-correcting codes in 1950." },
-    { tag: "TECH", text: "Dennis Ritchie created C at Bell Labs in the early 1970s." },
-    { tag: "TECH", text: "Linus Torvalds released Linux in 1991, and created Git in 2005." },
-    { tag: "TECH", text: "Python is named after Monty Python, not the snake." },
-    { tag: "TECH", text: "The first web page went live at CERN in 1991." },
-    { tag: "TECH", text: "The first computer mouse, built by Douglas Engelbart's team, had a wooden shell." },
-    { tag: "TECH", text: "Ariane 5's first launch (1996) failed due to a 64-bit float to 16-bit integer overflow." },
-    { tag: "TECH", text: "NASA lost the Mars Climate Orbiter in 1999 over a metric vs. imperial unit mix-up." },
-    { tag: "TECH", text: "32-bit Unix time overflows on January 19, 2038." },
-    { tag: "TECH", text: "IEEE 754, the floating-point standard, was published in 1985." },
-    { tag: "TECH", text: "Light in optical fibre travels at about two-thirds of its speed in a vacuum." },
-    { tag: "TECH", text: "One coulomb is about 6.24 × 10^18 electrons." },
-    { tag: "TECH", text: "Arduino was born in Ivrea, Italy, in 2005." },
-    { tag: "TECH", text: "The first Raspberry Pi launched in 2012 for about $35." },
-    { tag: "TECH", text: "Each Pac-Man ghost uses a different chase algorithm." },
-    { tag: "TECH", text: "0x5F3759DF: the magic constant behind the fast inverse square root." },
-    { tag: "TECH", text: "There are 10 types of people: those who get binary and those who don't." }
+  // Ticker: facts are labelled "DID YOU KNOW?", jokes have no label. Add or remove lines freely.
+  facts: [
+    "The University of Alberta was founded in 1908; Henry Marshall Tory was its first president.",
+    "UAlberta's first classes were held in 1908 at Queen Alexandra School in Strathcona.",
+    "The university motto, \"Quaecumque vera\", means \"Whatsoever things are true\".",
+    "Rutherford Library is named after Alexander Rutherford, Alberta's first premier and a founder of the university.",
+    "UAlberta researchers solved checkers in 2007: their program Chinook can never lose.",
+    "UAlberta's Cepheus essentially solved heads-up limit Texas hold'em poker in 2015.",
+    "DeepStack, built at UAlberta, beat professional poker players at no-limit hold'em in 2017.",
+    "UAlberta professor Richard Sutton, a pioneer of reinforcement learning, shared the 2024 Turing Award.",
+    "Amii, the Alberta Machine Intelligence Institute, is one of Canada's three national AI institutes.",
+    "UAlberta biochemist James Collip helped purify insulin for the first human patients in 1922.",
+    "The Edmonton Protocol for islet transplantation was developed at UAlberta around 2000.",
+    "Ex-Alta 1, built by UAlberta's AlbertaSat team, was Alberta's first satellite (2017).",
+    "The Butterdome (Universiade Pavilion) was built for the 1983 World University Games.",
+    "The first computer \"bug\" was a real moth taped into the Harvard Mark II logbook in 1947.",
+    "The Apollo Guidance Computer ran at about 1 MHz with roughly 4 KB of RAM.",
+    "The first transistor was demonstrated at Bell Labs in 1947.",
+    "Jack Kilby built the first integrated circuit at Texas Instruments in 1958.",
+    "The Intel 4004 (1971), the first commercial microprocessor, had about 2,300 transistors.",
+    "Gordon Moore made his famous transistor-doubling prediction in 1965.",
+    "The 555 timer IC, introduced in 1972, is one of the most-produced chips ever.",
+    "The 6502 CPU powered the Apple II, and a variant ran the NES.",
+    "ARM originally stood for Acorn RISC Machine.",
+    "RISC-V, the open instruction set, started at UC Berkeley in 2010.",
+    "ENIAC weighed about 30 tonnes and filled a large room.",
+    "Ada Lovelace published what's considered the first algorithm, for Babbage's Analytical Engine, in 1843.",
+    "Grace Hopper wrote one of the first compilers, A-0, in 1952.",
+    "Richard Hamming invented his error-correcting codes in 1950.",
+    "Dennis Ritchie created C at Bell Labs in the early 1970s.",
+    "Linus Torvalds released Linux in 1991, and created Git in 2005.",
+    "Python is named after Monty Python, not the snake.",
+    "The first web page went live at CERN in 1991.",
+    "The first computer mouse, built by Douglas Engelbart's team, had a wooden shell.",
+    "Ariane 5's first launch (1996) failed due to a 64-bit float to 16-bit integer overflow.",
+    "NASA lost the Mars Climate Orbiter in 1999 over a metric vs. imperial unit mix-up.",
+    "32-bit Unix time overflows on January 19, 2038.",
+    "IEEE 754, the floating-point standard, was published in 1985.",
+    "Light in optical fibre travels at about two-thirds of its speed in a vacuum.",
+    "One coulomb is about 6.24 × 10^18 electrons.",
+    "Arduino was born in Ivrea, Italy, in 2005.",
+    "The first Raspberry Pi launched in 2012 for about $35.",
+    "Each Pac-Man ghost uses a different chase algorithm.",
+    "0x5F3759DF: the magic constant behind the fast inverse square root.",
+    "There are 10 types of people: those who get binary and those who don't.",
+    "IBM's 305 RAMAC (1956), the first hard drive, stored about 5 MB and weighed over a tonne.",
+    "The word \"robot\" comes from Karel Čapek's 1920 play R.U.R.",
+    "Bluetooth is named after Harald Bluetooth, a 10th-century Danish king.",
+    "\"Wi-Fi\" doesn't stand for anything; it was a brand name invented by a marketing firm.",
+    "The first YouTube video, \"Me at the zoo\", was uploaded in April 2005.",
+    "symbolics.com, registered in 1985, was the first .com domain name.",
+    "Ray Tomlinson sent the first networked email in 1971 and picked the @ sign for addresses.",
+    "Werner Buchholz coined the word \"byte\" at IBM in 1956.",
+    "Claude Shannon's 1948 paper popularized the word \"bit\", short for binary digit.",
+    "Tim Berners-Lee proposed the World Wide Web at CERN in 1989.",
+    "The original Game Boy's CPU ran at about 4.19 MHz.",
+    "The NES had just 2 KB of main RAM.",
+    "Voyager 1, launched in 1977, is still sending data back from interstellar space.",
+    "Silicon is the second most abundant element in Earth's crust, after oxygen.",
+    "Modern high-end chips pack tens of billions of transistors.",
+    "USB 1.0 was released in 1996.",
+    "Audio CDs, developed by Philips and Sony, originally held 74 minutes of music.",
+    "Konrad Zuse's Z3 (1941) was the first working programmable, fully automatic digital computer.",
+    "Alan Turing described his universal computing machine in 1936.",
+    "Linux's mascot is a penguin named Tux.",
+    "Java was originally called Oak.",
+    "Brendan Eich created the first version of JavaScript in about 10 days in 1995.",
+    "The first iPhone was announced in January 2007.",
+    "DRAM stores each bit as charge on a tiny capacitor, which has to be refreshed constantly.",
+    "Georg Ohm published Ohm's law, V = IR, in 1827.",
+    "ASCII, first published in 1963, uses 7 bits per character.",
+    "Unicode has room for more than 1.1 million characters.",
+    "GPS satellite clocks run about 38 microseconds a day fast due to relativity, so they're corrected.",
+    "Flash memory was invented by Fujio Masuoka at Toshiba in the 1980s.",
+    "Engineers, including Thomas Edison, called technical faults \"bugs\" back in the 1800s.",
+    "Actress Hedy Lamarr co-invented a frequency-hopping system in 1942 that inspired later wireless tech.",
+    "Intel's 1994 Pentium FDIV bug caused rare division errors and cost the company about $475 million.",
+    "Half a byte (4 bits) is called a nibble.",
+    "An FPGA's logic can be rewired after it's made, just by loading a new configuration.",
+    "Two's complement lets one adder circuit handle both positive and negative numbers.",
+    "The Y2K bug came from programs that stored years with only two digits.",
+    "The first computer mouse was patented in 1970 as an \"X-Y position indicator for a display system\".",
+    "A modern smartphone has far more computing power than the computers that guided Apollo 11.",
+    "The term \"pixel\" is short for \"picture element\".",
+    "Wireless charging works by electromagnetic induction between two coils."
   ],
-  // Optional: headlines from your server, e.g. [{ text: "...", source: "The Verge" }]
-  news: [],
+  jokes: [
+    "Why do programmers prefer dark mode? Because light attracts bugs.",
+    "There's no place like 127.0.0.1.",
+    "A SQL query walks into a bar, goes up to two tables and asks: \"Can I join you?\"",
+    "I'd tell you a UDP joke, but you might not get it.",
+    "I'd tell you a TCP joke, but I'd keep repeating it until you got it.",
+    "Why do Java developers wear glasses? Because they don't C#.",
+    "How many programmers does it take to change a light bulb? None, that's a hardware problem.",
+    "To understand recursion, you must first understand recursion.",
+    "Why was the computer cold? It left its Windows open.",
+    "Knock knock. Race condition. Who's there?",
+    "The two hardest things in computer science: cache invalidation, naming things, and off-by-one errors.",
+    "!false: it's funny because it's true.",
+    "Why did the programmer quit their job? They didn't get arrays.",
+    "A byte walks into a bar looking upset. \"Parity error,\" it says. \"I thought you looked a bit off.\"",
+    "Why do programmers mix up Halloween and Christmas? Because Oct 31 == Dec 25.",
+    "My code doesn't have bugs. It has surprise features.",
+    "\"It works on my machine.\" Great, we'll ship your machine.",
+    "Why are assembly programmers always soaking wet? They work below C level.",
+    "What do you call 8 hobbits? A hobbyte.",
+    "Hardware: the part of the computer you can kick.",
+    "Why don't electrons pay for snacks? They're always charged.",
+    "Why did the LED break up with the resistor? It felt too limited.",
+    "Debugging: being the detective in a crime movie where you're also the murderer.",
+    "Real engineers start counting at 0.",
+    "In theory, theory and practice are the same. In practice, they're not.",
+    "What's a computer's favourite snack? Microchips.",
+    "git commit -m \"fixed it\". Narrator: they did not fix it.",
+    "Why did the capacitor skip the party? It didn't want to get discharged.",
+    "Why did the developer go broke? They used up all their cache.",
+    "Resistance is futile (if R < 1 Ω).",
+    "Why was the function so calm? It had no side effects.",
+    "Why did the computer go to the doctor? It had a virus.",
+    "I told my computer I needed a break. It went to sleep.",
+    "Why do electrical engineers make good friends? They're very grounded.",
+    "What did the router say to the doctor? \"It hurts when IP.\"",
+    "Why was the JavaScript developer sad? They didn't Node how to Express themselves.",
+    "Why did the transistor go to school? To get a little more gain.",
+    "How do you comfort a JavaScript bug? You console it.",
+    "The best thing about a Boolean is that even if you're wrong, you're only off by a bit.",
+    "Why did the programmer go outside? Just kidding."
+  ],
   linktree: "https://linktr.ee/compeclub"
 };
 
@@ -458,9 +556,11 @@ function renderMenu(snacks){
 function wxKind(c){
   c = (c || "").toLowerCase();
   if (/thunder|storm/.test(c)) return "storm";
-  if (/snow|flurr|sleet|ice/.test(c)) return "snow";
-  if (/rain|drizzle|shower/.test(c)) return "rain";
+  if (/snow|flurr|sleet|ice|grains/.test(c)) return "snow";
+  if (/drizzle/.test(c)) return "drizzle";
+  if (/rain|shower/.test(c)) return "rain";
   if (/fog|mist|haze|smoke/.test(c)) return "fog";
+  if (/wind|breez|gust/.test(c)) return "wind";
   if (/partly|mostly sunny|few clouds|mix/.test(c)) return "partly";
   if (/cloud|overcast/.test(c)) return "cloud";
   return "sun";
@@ -473,19 +573,31 @@ function rays(cx, cy, r1, r2){
   }
   return s;
 }
-const CLOUD = `<path class="drift" d="M15 47h33a11 11 0 0 0 1-22 15 15 0 0 0-29-3 12.5 12.5 0 0 0-5 25z" fill="#ded0ff" stroke="#8f6fe0" stroke-width="2"/>`;
+const CLOUD = (cls = "drift", fill = "#ded0ff") =>
+  `<path class="${cls}" d="M15 47h33a11 11 0 0 0 1-22 15 15 0 0 0-29-3 12.5 12.5 0 0 0-5 25z" fill="${fill}" stroke="#8f6fe0" stroke-width="2"/>`;
+// Particles falling from under the cloud; each starts at a different moment so it looks continuous
+function particles(kind){
+  const xs = kind === "drizzle" ? [22, 34, 46] : [16, 25, 34, 43, 52];
+  return xs.map((x, i) => {
+    const d = `animation-delay:${(i * (kind === "snow" ? .45 : .17)).toFixed(2)}s`;
+    if (kind === "snow") return `<circle class="w-snow" cx="${x}" cy="44" r="2.8" fill="#ffffff" style="${d}"/>`;
+    const len = kind === "drizzle" ? 4 : 7;
+    return `<line class="w-${kind === "drizzle" ? "drizzle" : "rain"}" x1="${x}" y1="42" x2="${x - 2}" y2="${42 + len}" stroke="#22f2d4" stroke-width="3" stroke-linecap="round" style="${d}"/>`;
+  }).join("");
+}
 function wxIcon(cond){
   const k = wxKind(cond);
-  const Y = "#ffe83d", T = "#22f2d4";
+  const Y = "#ffe83d";
   let g = "";
-  if (k === "sun") g = `<g class="spin" stroke="${Y}" stroke-width="4" stroke-linecap="round">${rays(32,32,19,27)}</g><circle cx="32" cy="32" r="13" fill="${Y}"/>`;
-  if (k === "partly") g = `<g class="spin sm" stroke="${Y}" stroke-width="3.5" stroke-linecap="round">${rays(22,22,13,19)}</g><circle cx="22" cy="22" r="9" fill="${Y}"/><g transform="translate(4 6)">${CLOUD}</g>`;
-  if (k === "cloud") g = `<g transform="translate(0 4)">${CLOUD}</g>`;
-  if (k === "snow") g = `<g transform="translate(0 -6)">${CLOUD}</g><g fill="${T}"><rect class="fall" x="20" y="50" width="5" height="5"/><rect class="fall" x="31" y="54" width="5" height="5"/><rect class="fall" x="42" y="50" width="5" height="5"/></g>`;
-  if (k === "rain") g = `<g transform="translate(0 -6)">${CLOUD}</g><g stroke="${T}" stroke-width="3.5" stroke-linecap="round"><line class="fall" x1="22" y1="49" x2="19" y2="56"/><line class="fall" x1="33" y1="51" x2="30" y2="58"/><line class="fall" x1="44" y1="49" x2="41" y2="56"/></g>`;
-  if (k === "storm") g = `<g transform="translate(0 -6)">${CLOUD}</g><polygon points="33,40 24,54 31,54 27,63 42,47 34,47 38,40" fill="${Y}"/>`;
-  if (k === "fog") g = `<g stroke="#ded0ff" stroke-width="5" stroke-linecap="round"><line class="drift" x1="12" y1="24" x2="52" y2="24"/><line x1="8" y1="34" x2="48" y2="34"/><line class="drift" x1="16" y1="44" x2="56" y2="44"/></g>`;
-  return `<svg viewBox="0 0 64 64">${g}</svg>`;
+  if (k === "sun") g = `<g class="spin" stroke="${Y}" stroke-width="4" stroke-linecap="round">${rays(32,32,19,27)}</g><circle class="w-glow" cx="32" cy="32" r="13" fill="${Y}"/>`;
+  if (k === "partly") g = `<g class="spin sm" stroke="${Y}" stroke-width="3.5" stroke-linecap="round">${rays(22,22,13,19)}</g><circle cx="22" cy="22" r="9" fill="${Y}"/><g transform="translate(4 6)">${CLOUD("w-float")}</g>`;
+  if (k === "cloud") g = `<g transform="translate(10 -10) scale(.7)">${CLOUD("w-float2", "#a993e6")}</g><g transform="translate(0 4)">${CLOUD("w-float")}</g>`;
+  if (k === "wind") g = `<g transform="translate(-2 -10)">${CLOUD("w-float")}</g><g stroke="#ded0ff" stroke-width="3.5" stroke-linecap="round" fill="none">
+      <path class="w-gust" d="M4 46h34a6 6 0 1 0-6-6"/><path class="w-gust" style="animation-delay:.5s" d="M10 54h44a6 6 0 1 1-6 6"/><path class="w-gust" style="animation-delay:1s" d="M2 62h26"/></g>`;
+  if (k === "snow" || k === "rain" || k === "drizzle") g = `<g transform="translate(0 -10)">${CLOUD("w-float")}</g>${particles(k)}`;
+  if (k === "storm") g = `<g transform="translate(0 -10)">${CLOUD("w-float", "#8f7bc4")}</g>${particles("rain")}<polygon class="w-bolt" points="33,34 24,48 31,48 27,58 42,42 34,42 38,34" fill="${Y}"/>`;
+  if (k === "fog") g = `<g stroke="#ded0ff" stroke-width="5" stroke-linecap="round"><line class="w-fog" x1="12" y1="22" x2="52" y2="22"/><line class="w-fog" style="animation-delay:-1.5s" x1="6" y1="32" x2="46" y2="32"/><line class="w-fog" style="animation-delay:-3s" x1="16" y1="42" x2="56" y2="42"/></g>`;
+  return `<svg viewBox="0 0 64 64" style="overflow:visible">${g}</svg>`;
 }
 const deg = t => `${Math.round(t)}°`;
 
@@ -528,41 +640,37 @@ function renderQR(url){
   $("qr").innerHTML = LIVE ? `<img src="qr.svg?u=${encodeURIComponent(url)}" alt="" style="width:100%;height:100%;display:block">` : "";
 }
 
-/* Ticker: shuffles the fact library + news, plays it in batches.
-   Each batch scrolls fully across, then the next one starts. */
-const TAG_CLASS = { "UALBERTA": "c-g", "TECH": "c-t", "TECH NEWS": "c-p", "NEWS": "c-p" };
-let tickerFacts = [], tickerNews = [], hnNews = [], tickerQueue = [], tickerStarted = false, tickerFirst = true;
+/* Ticker: one item at a time slides in from the left, pauses in the middle, slides out the right.
+   Facts get a "DID YOU KNOW?" label, jokes get none, live headlines get "TECH NEWS". */
+const TAG_CLASS = { "DID YOU KNOW?": "c-t", "TECH NEWS": "c-p" };
+let tickerData = DATA, hnNews = [], tickerQueue = [], tickerStarted = false;
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
-const norm = (x, tag) => typeof x === "string" ? { tag, text: x } : { tag: x.tag || tag, text: x.text + (x.source ? ` (${x.source})` : "") };
 
 function renderTicker(data){
-  tickerFacts = (data.ticker || []).map(x => norm(x, "DID YOU KNOW"));
-  tickerNews = (data.news || []).map(x => norm(x, "TECH NEWS"));
+  tickerData = data;
   if (!tickerStarted){ tickerStarted = true; playTicker(); }
 }
-function refillQueue(){
-  const facts = shuffle(tickerFacts), news = shuffle(tickerNews.concat(hnNews));
-  const q = [];
-  facts.forEach((f, i) => { q.push(f); if (i % 2 === 1 && news.length) q.push(news.shift()); });
-  tickerQueue = q.concat(news);
+function nextTickerItem(){
+  if (!tickerQueue.length){
+    tickerQueue = shuffle([
+      ...(tickerData.facts || []).map(text => ({ tag: "DID YOU KNOW?", text })),
+      ...(tickerData.jokes || []).map(text => ({ tag: "", text })),
+      ...hnNews,
+    ]);
+  }
+  return tickerQueue.shift();
 }
 function playTicker(){
-  const tr = $("ticker");
-  if (tickerQueue.length < 5) refillQueue();
-  const batch = tickerQueue.splice(0, 5);
-  if (!batch.length) return;
-  tr.classList.remove("run");
-  tr.innerHTML = batch.map(x =>
-    `<span class="tk-item"><b class="${TAG_CLASS[x.tag] || "c-y"}">${esc(x.tag)}</b>${esc(x.text)}</span><span class="tk-sep">&#9670;</span>`).join("");
-  const view = tr.parentElement.offsetWidth;
-  const from = tickerFirst ? 24 : view; // first batch starts on screen, no empty bar at boot
-  tickerFirst = false;
-  tr.style.setProperty("--from", from + "px");
-  tr.style.setProperty("--dur", ((from + tr.scrollWidth) / 110) + "s"); // ~110 px/s
-  void tr.offsetWidth;
-  tr.classList.add("run");
+  const it = nextTickerItem(), el = $("ticker");
+  if (!it) return setTimeout(playTicker, 2000);
+  el.innerHTML = (it.tag ? `<b class="${TAG_CLASS[it.tag] || "c-y"}">${esc(it.tag)}</b>` : "") + esc(it.text);
+  el.className = "tk-item"; void el.offsetWidth; el.className = "tk-item in";
+  const hold = 3500 + it.text.length * 55; // longer items stay up longer
+  setTimeout(() => {
+    el.className = "tk-item out";
+    setTimeout(playTicker, 750);
+  }, 800 + hold);
 }
-$("ticker").addEventListener("animationend", playTicker);
 
 /* Live tech headlines from the Hacker News API (CORS-enabled, no key).
    Set NEWS_HN = false to turn off; fails silently when offline. */
@@ -579,10 +687,17 @@ async function fetchHN(){
 /* =====================================================================
    Mascot + sale celebration
    ===================================================================== */
-const CHEERS = ["NOM NOM!", "THANKS!", "ENJOY!", "GOOD CHOICE!", "BEEP BOOP, THANKS!", "SNACK ACQUIRED!"];
-const IDLE = ["HUNGRY? I COMPUTE YES.", "01001000 01001001!", "LOW BATTERY? EAT.", "GRAB A SNACK!", "BEEP BOOP."];
+const CHEERS = ["NOM NOM!", "THANKS!", "ENJOY!", "GOOD CHOICE!", "BEEP BOOP, THANKS!", "SNACK ACQUIRED!",
+  "TRANSACTION COMPLETE!", "FUEL LOADED!", "CRUNCH TIME!", "EXCELLENT TASTE!", "LEVEL UP!", "+1 HAPPY HUMAN",
+  "YUM.EXE RUNNING", "COMBO x1!", "ACHIEVEMENT UNLOCKED!", "SNACK SUCCESSFULLY DEPLOYED!"];
+const IDLE = ["HUNGRY? I COMPUTE YES.", "01001000 01001001!", "LOW BATTERY? EAT.", "GRAB A SNACK!", "BEEP BOOP.",
+  "FUEL FOR YOUR LABS!", "DEBUGGING IS EASIER WITH CHIPS.", "MY FAVOURITE SNACK? MICROCHIPS.",
+  "ASSIGNMENT DUE? SNACK FIRST.", "RUNNING ON 5V AND VIBES.", "I SEE YOU EYEING THE BULDAK.",
+  "NO SEGFAULTS IN THIS SNACK BAR.", "HELLO, WORLD!", "COMPILING HUNGER...", "INSERT COIN TO CONTINUE",
+  "STAY HYDRATED, HUMANS.", "WHILE(HUNGRY) { EAT(); }", "CTRL+S YOUR WORK. THEN SNACK.",
+  "BRAIN AT 3%. RECHARGE?", "I RUN ON ELECTRONS. YOU RUN ON SNACKS."];
 let bubbleTimer = null;
-function say(text, ms = 2600){
+function say(text, ms = 4000){
   const b = $("bubble");
   b.textContent = text; b.classList.add("show");
   clearTimeout(bubbleTimer);
@@ -594,7 +709,7 @@ function cheer(text){
   bot.classList.remove("cheer"); void bot.getBoundingClientRect(); bot.classList.add("cheer");
   clearTimeout(cheerTimer);
   cheerTimer = setTimeout(() => bot.classList.remove("cheer"), 2400);
-  say(text, 2600);
+  say(text, 4000);
 }
 
 function stageScale(){ return parseFloat(getComputedStyle($("stage")).getPropertyValue("--s")) || 1; }
@@ -604,25 +719,6 @@ function stagePoint(el){
 }
 
 const CONFETTI_COLORS = ["#ffe83d", "#ff3fa4", "#22f2d4", "#a46bff", "#ffffff", "#ffae2b"];
-function confetti(x, y, w){
-  const fx = $("fx"), layer = document.createElement("div");
-  layer.style.cssText = "position:absolute;inset:0";
-  const N = 90;
-  for (let i = 0; i < N; i++){
-    const p = document.createElement("i");
-    p.className = "cf";
-    const sz = 8 + Math.random() * 12, strip = Math.random() < .4;
-    const x1 = (Math.random() - .5) * 1100, y1 = -(150 + Math.random() * 550);
-    p.style.cssText =
-      `--x0:${x + Math.random() * w}px;--y0:${y}px;--w:${strip ? sz * .5 : sz}px;--h:${strip ? sz * 1.8 : sz}px;` +
-      `--c:${CONFETTI_COLORS[i % CONFETTI_COLORS.length]};--x1:${x1}px;--y1:${y1}px;` +
-      `--x2:${x1 * 1.35}px;--y2:${y1 + 700 + Math.random() * 600}px;--r:${(Math.random() - .5) * 1440}deg;` +
-      `--d:${1.8 + Math.random() * 1.2}s`;
-    layer.appendChild(p);
-  }
-  fx.appendChild(layer);
-  setTimeout(() => layer.remove(), 3200);
-}
 function floatText(text, x, y){
   const t = document.createElement("div");
   t.className = "plus"; t.textContent = text;
@@ -638,11 +734,10 @@ function celebrate(sales){
       row.classList.remove("flash"); void row.offsetWidth; row.classList.add("flash");
       setTimeout(() => row.classList.remove("flash"), 1600);
       const p = stagePoint(row);
-      confetti(p.x, p.y + p.h / 2, p.w);
       floatText(s.qty > 1 ? `+${s.qty} SOLD!` : "+1 SALE!", p.x + p.w * 0.62, p.y - 6);
     }
-    cheer(CHEERS[Math.floor(Math.random() * CHEERS.length)]);
   }, k * 700));
+  party();
 }
 
 /* =====================================================================
@@ -657,13 +752,11 @@ function detectSales(oldD, newD){
     .map(s => ({ item: s.item, qty: before.get(s.item) - s.stock }));
 }
 function renderSync(data){
+  // Tiny dot: green = synced with the sheet in the last minute, amber = falling behind, red = can't connect, none = sample data
   const el = $("sync");
-  if (!data.source){ el.textContent = "SAMPLE DATA"; return; }
-  if (data.source === "sheet" && !data.updated){ el.textContent = "SHEET \u00b7 CAN'T CONNECT"; el.style.color = "var(--red)"; return; }
-  const ago = Math.max(0, Math.round(Date.now() / 1000 - data.updated));
-  const ok = data.source === "sheet" && ago < 120;
-  el.textContent = data.source === "sheet" ? `SHEET \u00b7 SYNCED ${ago < 60 ? ago + "S" : Math.round(ago / 60) + "M"} AGO` : "SAMPLE DATA";
-  el.style.color = ok ? "var(--teal)" : "var(--amber)";
+  if (data.source !== "sheet"){ el.className = "sync"; return; }
+  if (!data.updated){ el.className = "sync err"; return; }
+  el.className = Date.now() / 1000 - data.updated < 60 ? "sync ok" : "sync stale";
 }
 function render(data){
   renderSync(data);
@@ -714,7 +807,7 @@ async function poll(){
   } catch (e) { /* keep showing last good data */ }
 }
 
-// Hidden key: "S" throws a party: confetti rains down from the top of the screen
+// Confetti rains down from the top of the screen: on every sale, and on the hidden "S" key
 let partyUntil = 0;
 function party(){
   if (Date.now() < partyUntil) return;
@@ -741,7 +834,7 @@ addEventListener("resize", fit);
 fit(); makeStars();
 render(DATA);
 tick(); setInterval(tick, 1000);
-setInterval(() => { if (!$("bot").classList.contains("cheer")) say(IDLE[Math.floor(Math.random() * IDLE.length)], 3000); }, 45000);
+setInterval(() => { if (!$("bot").classList.contains("cheer")) say(IDLE[Math.floor(Math.random() * IDLE.length)], 5500); }, 30000);
 if (NEWS_HN){ fetchHN(); setInterval(fetchHN, 30 * 60 * 1000); }
 if (LIVE){ poll(); setInterval(poll, POLL_MS); }
 </script>

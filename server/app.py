@@ -107,19 +107,27 @@ WMO = {0: "Sunny", 1: "Mostly Sunny", 2: "Partly Cloudy", 3: "Overcast", 45: "Fo
        96: "Thunderstorm", 99: "Thunderstorm"}
 
 
+WINDY_KMH = 35
+
+
 def fetch_weather():
     r = requests.get("https://api.open-meteo.com/v1/forecast", timeout=15, params={
         "latitude": WX.get("lat", 53.5232), "longitude": WX.get("lon", -113.5263),
-        "current": "temperature_2m,weather_code", "daily": "temperature_2m_max,weather_code",
+        "current": "temperature_2m,weather_code,wind_speed_10m",
+        "daily": "temperature_2m_max,weather_code,wind_speed_10m_max",
         "timezone": "auto", "forecast_days": 4,
     }).json()
     cur, daily = r["current"], r["daily"]
+
+    def cond(code, wind):
+        # Dry days with strong wind show as "Windy" so the icon can animate gusts
+        return "Windy" if code <= 3 and wind >= WINDY_KMH else WMO.get(code, "Cloudy")
     forecast = []
     for i in range(1, 4):
         day = datetime.strptime(daily["time"][i], "%Y-%m-%d").strftime("%a")
         forecast.append({"day": day, "tempC": daily["temperature_2m_max"][i],
-                         "condition": WMO.get(daily["weather_code"][i], "Cloudy")})
-    return {"tempC": cur["temperature_2m"], "condition": WMO.get(cur["weather_code"], "Cloudy"),
+                         "condition": cond(daily["weather_code"][i], daily["wind_speed_10m_max"][i])})
+    return {"tempC": cur["temperature_2m"], "condition": cond(cur["weather_code"], cur["wind_speed_10m"]),
             "forecast": forecast}
 
 
@@ -128,7 +136,7 @@ def fetch_weather():
 STATE = {"snacks": [], "events": [], "weather": None, "linktree": LINKTREE,
          "source": "sheet" if SHEET.get("id") else "sample", "updated": None}
 SOURCES = [  # (key, fetcher, seconds between refreshes)
-    ("snacks", fetch_snacks, SHEET.get("refresh_seconds", 30)),
+    ("snacks", fetch_snacks, 10),
     ("events", fetch_events, CAL.get("refresh_seconds", 120)),
     ("weather", fetch_weather, 900),
 ]
