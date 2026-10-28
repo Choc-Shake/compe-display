@@ -1,0 +1,5 @@
+.venv/
+__pycache__/
+config.toml
+robot-key.json
+*.json.key

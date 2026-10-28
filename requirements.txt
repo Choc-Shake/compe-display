@@ -1,0 +1,7 @@
+fastapi>=0.110
+uvicorn>=0.29
+requests>=2.31
+segno>=1.6
+gspread>=6.0
+icalendar>=5.0
+recurring-ical-events>=2.2

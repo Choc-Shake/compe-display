@@ -1,0 +1,723 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CompE Snack Bar</title>
+<link href="fonts/fonts.css" rel="stylesheet">
+<style>
+:root{
+  --bg:#10061d; --panel:#1d0f36; --panel-2:#170a2b; --line:#3a2269; --row:#25144a;
+  --ink:#f6eeff; --dim:#a891d4; --faint:#6c58a0;
+  --yellow:#ffe83d; --pink:#ff3fa4; --teal:#22f2d4; --violet:#a46bff;
+  --amber:#ffae2b; --red:#ff3b5c; --grey:#5d5275;
+  --pixel:"Press Start 2P", monospace;
+  --body:"Chakra Petch", system-ui, sans-serif;
+  --mono:"VT323", monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:#07020e;cursor:none}
+body{font-family:var(--body);color:var(--ink);-webkit-font-smoothing:antialiased}
+
+/* ---------- Stage: fixed 1200x1920, scaled to fit any viewport ---------- */
+#stage{
+  position:absolute;left:50%;top:50%;width:1200px;height:1920px;
+  transform:translate(-50%,-50%) scale(var(--s,1));
+  display:grid;grid-template-columns:1fr 1fr;
+  grid-template-rows:150px 1110px 300px 200px 64px;
+  gap:14px;padding:20px;overflow:hidden;
+  background:
+    linear-gradient(rgba(164,107,255,.07) 1px, transparent 1px) 0 0/40px 40px,
+    linear-gradient(90deg, rgba(164,107,255,.07) 1px, transparent 1px) 0 0/40px 40px,
+    var(--bg);
+}
+/* CRT scanlines */
+#stage::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:60;
+  background:repeating-linear-gradient(0deg, rgba(0,0,0,.18) 0 2px, transparent 2px 4px);opacity:.35}
+.stars{position:absolute;left:0;top:0;width:3px;height:3px;background:transparent;pointer-events:none;
+  animation:twinkle 6s ease-in-out infinite alternate;z-index:0}
+@keyframes twinkle{from{opacity:.25}to{opacity:.8}}
+
+/* ---------- Panels ---------- */
+.panel{
+  --acc:var(--yellow);
+  position:relative;z-index:1;border-radius:26px;padding:16px 22px;
+  background:linear-gradient(180deg,var(--panel),var(--panel-2));
+  border:2px solid var(--line);
+  box-shadow:0 0 0 1px rgba(0,0,0,.4), 0 18px 40px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.06);
+  display:flex;flex-direction:column;min-height:0;overflow:hidden;
+}
+/* little solder pads in the corner */
+.panel::after{content:"";position:absolute;right:22px;top:12px;width:46px;height:10px;opacity:0;
+  background:radial-gradient(circle,var(--acc) 3px,transparent 4px) 0 0/16px 10px repeat-x}
+.ph{display:flex;align-items:center;justify-content:space-between;gap:12px;height:44px;flex:none;margin-bottom:8px}
+.ph h2{margin:0;font-family:var(--pixel);font-size:21px;letter-spacing:1px;color:var(--acc);
+  text-shadow:3px 3px 0 rgba(0,0,0,.55)}
+.tag{font-family:var(--pixel);font-size:12px;color:var(--bg);background:var(--acc);padding:7px 9px;border-radius:6px;
+  box-shadow:3px 3px 0 rgba(0,0,0,.5)}
+.tag.ghost{background:transparent;color:var(--dim);border:2px solid var(--line);box-shadow:none}
+.blink{animation:blink 1.1s steps(2,start) infinite}
+@keyframes blink{to{visibility:hidden}}
+
+/* ---------- Header ---------- */
+.header{grid-column:1/-1;--acc:var(--pink);flex-direction:row;align-items:center;gap:18px;padding:8px 26px 8px 14px;overflow:visible}
+.header::after{display:none}
+.bot-wrap{width:132px;height:142px;flex:none;position:relative}
+#bot{width:132px;height:142px;overflow:visible}
+.brand{flex:1;min-width:0}
+.brand h1{margin:0;font-family:var(--pixel);font-size:42px;line-height:1.15;letter-spacing:1px;white-space:nowrap}
+.brand h1 .a{color:var(--yellow);text-shadow:4px 4px 0 #6b1d5c}
+.brand h1 .b{color:var(--pink);text-shadow:4px 4px 0 #3a0f63}
+.brand .sub{margin-top:12px;font-family:var(--mono);font-size:30px;color:var(--dim);letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:clip}
+.brand .sub b{color:var(--teal);font-weight:400}
+.clock{text-align:right;flex:none}
+.clock .t{font-family:var(--mono);font-size:96px;line-height:.8;color:var(--yellow)}
+.clock .t .colon{animation:blink 1s steps(2,start) infinite}
+.clock .t small{font-size:40px;color:var(--pink);margin-left:6px}
+.clock .d{margin-top:18px;font-family:var(--pixel);font-size:16px;color:var(--teal);letter-spacing:1px}
+
+/* mascot animation */
+#bot .bob{animation:bob 2.6s ease-in-out infinite alternate}
+@keyframes bob{from{transform:translateY(2px)}to{transform:translateY(-6px)}}
+#bot .eyes{transform-box:fill-box;transform-origin:center;animation:eyeblink 4.6s infinite}
+@keyframes eyeblink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.12)}}
+#bot .led{animation:led 1.4s ease-in-out infinite alternate}
+@keyframes led{from{opacity:.35}to{opacity:1}}
+#bot .arm{transform-box:fill-box;transform-origin:50% 12%;transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
+#bot .arm-l{animation:wave 3.4s ease-in-out infinite}
+@keyframes wave{0%,70%,100%{transform:rotate(0)}78%{transform:rotate(18deg)}86%{transform:rotate(4deg)}94%{transform:rotate(16deg)}}
+#bot .happy{opacity:0}
+#bot.cheer .bob{animation:hop .45s ease-in-out 4}
+@keyframes hop{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
+#bot.cheer .arm-l{animation:none;transform:rotate(150deg)}
+#bot.cheer .arm-r{transform:rotate(-150deg)}
+#bot.cheer .eyes{opacity:0}
+#bot.cheer .happy{opacity:1}
+#bot.cheer .led{animation:led .15s infinite alternate;fill:var(--yellow)}
+
+.bubble{position:absolute;left:140px;top:2px;z-index:70;white-space:nowrap;
+  font-family:var(--pixel);font-size:19px;color:#1a0b2e;background:var(--yellow);padding:14px 18px;border-radius:12px;
+  box-shadow:5px 5px 0 var(--pink);
+  transform-origin:0 50%;transform:scale(0);opacity:0;transition:transform .3s cubic-bezier(.3,1.7,.5,1),opacity .2s}
+.bubble::before{content:"";position:absolute;left:-14px;top:22px;border:8px solid transparent;border-right:14px solid var(--yellow);border-left:0}
+.bubble.show{transform:scale(1);opacity:1}
+
+/* ---------- Snack menu ---------- */
+.menu{grid-column:1/-1;--acc:var(--yellow)}
+.cols,.row{display:grid;grid-template-columns:1fr 150px 104px 300px;gap:18px;align-items:center;padding:0 18px}
+.cols{height:30px;flex:none;font-family:var(--pixel);font-size:14px;color:var(--faint);letter-spacing:1px}
+.cols div:nth-child(2),.cols div:nth-child(3){text-align:right}
+.list{flex:1;display:grid;grid-template-rows:repeat(17,1fr);gap:4px;min-height:0;padding-bottom:6px}
+.row{position:relative;min-height:0;border-radius:12px;background:rgba(255,255,255,.025);--st:var(--teal)}
+.row:nth-child(odd){background:rgba(164,107,255,.08)}
+.row::before{content:"";position:absolute;inset:0;border-radius:12px;pointer-events:none;opacity:0;
+  background:linear-gradient(90deg,rgba(255,232,61,.55),rgba(255,63,164,.35))}
+.row::after{content:"";position:absolute;inset:0;border-radius:12px;pointer-events:none;opacity:0;
+  box-shadow:inset 0 0 0 2px var(--red)}
+.nm{font-size:calc(39px * var(--rs,1));font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1}
+.nm .vol{font-size:calc(26px * var(--rs,1));font-weight:500;color:var(--dim);margin-left:8px}
+.pr{font-family:var(--mono);font-size:calc(54px * var(--rs,1));line-height:1;text-align:right;color:var(--yellow)}
+.qty{font-size:calc(40px * var(--rs,1));font-weight:700;text-align:right;color:var(--st);line-height:1}
+.bar{position:relative;height:calc(28px * var(--rs,1));border-radius:5px;background:rgba(0,0,0,.45);border:2px solid rgba(255,255,255,.08);overflow:hidden}
+.bar i{position:absolute;left:0;top:0;bottom:0;width:calc(var(--f)*100%);background:var(--st);transition:width .6s ease}
+.bar::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 13px,rgba(16,6,29,.9) 13px 17px)}
+.bar .so{display:none}
+.row.low{--st:var(--amber)}
+.row.crit{--st:var(--red)}
+.row.crit::after{animation:pulse 1.6s ease-in-out infinite}
+.row.crit .qty{animation:pulseTxt 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.15}50%{opacity:1}}
+@keyframes pulseTxt{0%,100%{opacity:1}50%{opacity:.55}}
+.row.out{--st:var(--grey)}
+.row.out .nm,.row.out .pr{color:var(--grey)}
+.row.out .nm .vol{color:var(--grey)}
+.row.out .bar{background:#5c2335;border:0;border-radius:8px;height:38px}
+.row.out .bar::after,.row.out .bar i{display:none}
+.row.out .bar .so{display:flex;position:absolute;inset:0;align-items:center;justify-content:center;
+  font-family:var(--pixel);font-size:17px;color:#f0b8c4;letter-spacing:3px}
+.row.flash::before{animation:flash 1.5s ease-out}
+.row.flash{animation:nudge .5s ease-out}
+@keyframes flash{0%{opacity:1}15%{opacity:.2}30%{opacity:1}45%{opacity:.25}60%{opacity:.9}100%{opacity:0}}
+@keyframes nudge{0%{transform:scale(1)}30%{transform:scale(1.02)}100%{transform:scale(1)}}
+
+/* ---------- Weather ---------- */
+.weather{--acc:var(--teal)}
+.wx{flex:1;display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:16px;min-height:0}
+.wx-now{display:flex;flex-direction:column;justify-content:center}
+.wx-top{display:flex;align-items:center;gap:6px}
+.wx-top svg{width:100px;height:100px;flex:none}
+.wx-temp{font-family:var(--mono);font-size:112px;white-space:nowrap;line-height:.8;color:var(--ink)}
+.wx-temp small{font-size:46px;color:var(--teal);vertical-align:top}
+.wx-cond{font-size:28px;font-weight:600;margin-top:10px}
+.wx-city{font-family:var(--pixel);font-size:12px;color:var(--dim);margin-top:8px;letter-spacing:1px}
+.fc{display:grid;grid-template-rows:repeat(3,1fr);gap:8px}
+.fc div{display:grid;grid-template-columns:52px 44px 1fr;align-items:center;gap:6px;padding:0 12px;min-width:0;border-radius:12px;background:rgba(34,242,212,.07);border:1px solid rgba(34,242,212,.18)}
+.fc .dy{font-family:var(--pixel);font-size:13px;color:var(--teal)}
+.fc svg{width:46px;height:46px}
+.fc .tp{font-family:var(--mono);font-size:42px;white-space:nowrap;text-align:right;line-height:1}
+.spin{transform-box:view-box;transform-origin:32px 32px;animation:spin 24s linear infinite}
+.spin.sm{transform-origin:22px 22px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.fall{animation:fall 1.8s ease-in infinite}
+.fall:nth-of-type(2){animation-delay:.6s}.fall:nth-of-type(3){animation-delay:1.2s}
+@keyframes fall{from{transform:translateY(-4px);opacity:0}30%{opacity:1}to{transform:translateY(8px);opacity:0}}
+.drift{animation:drift 5s ease-in-out infinite alternate}
+@keyframes drift{from{transform:translateX(-2px)}to{transform:translateX(3px)}}
+
+/* ---------- QR ---------- */
+.qr{--acc:var(--pink)}
+.qr-body{flex:1;display:grid;grid-template-columns:212px 1fr;gap:22px;align-items:center;min-height:0}
+.qr-code{width:212px;height:212px;background:#fff;border-radius:16px;padding:8px;box-shadow:0 0 0 4px var(--pink)}
+.qr-code svg{width:100%;height:100%;display:block}
+.qr-txt .big{font-size:40px;font-weight:700;line-height:1.05}
+.qr-txt .big span{color:var(--pink)}
+.qr-txt p{margin:10px 0 14px;font-size:22px;color:var(--dim);line-height:1.25}
+.qr-txt .press{font-family:var(--pixel);font-size:15px;color:var(--yellow)}
+
+/* ---------- Events ---------- */
+.events{--acc:var(--pink);grid-column:1/-1}
+.ev-list{flex:1;display:grid;grid-template-columns:repeat(var(--n,3),1fr);gap:14px;min-height:0}
+.evt{display:grid;grid-template-columns:76px 1fr;gap:14px;align-items:center;padding:0 12px 0 8px;border-radius:14px;background:rgba(255,255,255,.04);border-left:5px solid var(--c)}
+.evt .dt{text-align:center;line-height:1}
+.evt .dt b{display:block;font-family:var(--pixel);font-size:11px;color:var(--c)}
+.evt .dt span{display:block;font-size:44px;font-weight:700;margin-top:4px}
+.evt .ti{font-size:30px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.1}
+.evt .rel{font-family:var(--pixel);font-size:12px;color:var(--c);margin-top:6px}
+.evt.soon{background:linear-gradient(90deg,rgba(255,232,61,.14),rgba(255,255,255,.03))}
+.evt.filler{border:2px dashed var(--line);border-left-width:2px;background:transparent;display:flex;justify-content:center;
+  font-family:var(--pixel);font-size:12px;color:var(--faint)}
+
+/* ---------- Ticker ---------- */
+.ticker{grid-column:1/-1;display:flex;align-items:stretch;border-radius:18px;overflow:hidden;position:relative;z-index:1;
+  background:#0b0416;border:2px solid var(--line)}
+.tk-view{flex:1;overflow:hidden;position:relative;
+  -webkit-mask:linear-gradient(90deg,transparent,#000 40px,#000 calc(100% - 40px),transparent)}
+.tk-track{position:absolute;left:0;top:0;bottom:0;display:flex;align-items:center;white-space:nowrap;
+  transform:translateX(var(--from,1200px));will-change:transform}
+.tk-track.run{animation:scroll var(--dur,60s) linear 1 forwards}
+@keyframes scroll{from{transform:translateX(var(--from))}to{transform:translateX(-100%)}}
+.tk-item{font-size:28px;font-weight:600;padding-right:26px}
+.tk-item b{font-family:var(--pixel);font-size:14px;font-weight:400;margin-right:12px;vertical-align:3px}
+.tk-sep{color:var(--violet);padding-right:26px;font-size:22px}
+.c-g{color:#7fe08a}.c-y{color:var(--yellow)}.c-r{color:var(--red)}.c-a{color:var(--amber)}.c-t{color:var(--teal)}.c-p{color:var(--pink)}
+
+/* ---------- Sale FX ---------- */
+.fx{position:absolute;inset:0;pointer-events:none;z-index:55;overflow:hidden}
+.cf{position:absolute;left:var(--x0);top:var(--y0);width:var(--w);height:var(--h);background:var(--c);
+  animation:cf var(--d) cubic-bezier(.15,.65,.35,1) forwards;will-change:transform,opacity}
+@keyframes cf{
+  0%{transform:translate(0,0) rotate(0);opacity:1}
+  35%{transform:translate(var(--x1),var(--y1)) rotate(calc(var(--r) * .4));opacity:1}
+  100%{transform:translate(var(--x2),var(--y2)) rotate(var(--r));opacity:0}}
+.plus{position:absolute;font-family:var(--pixel);font-size:34px;color:var(--yellow);white-space:nowrap;
+  text-shadow:4px 4px 0 var(--pink);animation:rise 1.6s ease-out forwards}
+@keyframes rise{0%{transform:translate(-50%,10px) scale(.6);opacity:0}20%{transform:translate(-50%,-20px) scale(1.15);opacity:1}100%{transform:translate(-50%,-120px) scale(1);opacity:0}}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="stars" id="stars"></div>
+
+  <!-- 1. HEADER -->
+  <section class="panel header">
+    <div class="bot-wrap">
+      <svg id="bot" viewBox="0 0 140 150" aria-label="Robot mascot">
+        <g class="bob">
+          <!-- antenna -->
+          <line x1="70" y1="10" x2="70" y2="27" stroke="#c9a9ff" stroke-width="4" stroke-linecap="round"/>
+          <circle class="led" cx="70" cy="9" r="7" fill="#ff3fa4"/>
+          <!-- ears -->
+          <rect x="12" y="44" width="14" height="26" rx="4" fill="#22f2d4"/>
+          <rect x="114" y="44" width="14" height="26" rx="4" fill="#22f2d4"/>
+          <!-- head -->
+          <rect x="22" y="25" width="96" height="66" rx="18" fill="#6a3bd8" stroke="#c9a9ff" stroke-width="3"/>
+          <rect x="33" y="35" width="74" height="46" rx="11" fill="#0c0420"/>
+          <!-- pixel eyes -->
+          <g class="eyes">
+            <rect x="47" y="46" width="13" height="17" rx="2" fill="#22f2d4"/>
+            <rect x="80" y="46" width="13" height="17" rx="2" fill="#22f2d4"/>
+            <rect x="49" y="48" width="4" height="4" fill="#fff"/>
+            <rect x="82" y="48" width="4" height="4" fill="#fff"/>
+          </g>
+          <!-- happy ^ ^ eyes -->
+          <g class="happy" stroke="#ffe83d" stroke-width="5" fill="none" stroke-linecap="square">
+            <polyline points="45,60 53,50 61,60"/>
+            <polyline points="79,60 87,50 95,60"/>
+          </g>
+          <!-- pixel smile -->
+          <g fill="#ff3fa4">
+            <rect x="60" y="68" width="5" height="4"/><rect x="65" y="71" width="10" height="4"/><rect x="75" y="68" width="5" height="4"/>
+          </g>
+          <!-- neck + body -->
+          <rect x="60" y="91" width="20" height="8" fill="#4a2a99"/>
+          <!-- arms (behind body) -->
+          <rect class="arm arm-l" x="22" y="100" width="15" height="36" rx="7" fill="#22f2d4" stroke="#0c0420" stroke-width="2"/>
+          <rect class="arm arm-r" x="103" y="100" width="15" height="36" rx="7" fill="#22f2d4" stroke="#0c0420" stroke-width="2"/>
+          <rect x="36" y="97" width="68" height="46" rx="12" fill="#4a2a99" stroke="#c9a9ff" stroke-width="3"/>
+          <!-- chest: coin slot + LEDs -->
+          <rect x="50" y="106" width="40" height="10" rx="3" fill="#0c0420"/>
+          <rect x="67" y="108" width="6" height="6" fill="#ffe83d"/>
+          <circle cx="56" cy="128" r="4" fill="#ff3fa4"/><circle cx="70" cy="128" r="4" fill="#ffe83d"/><circle cx="84" cy="128" r="4" fill="#22f2d4"/>
+        </g>
+      </svg>
+      <div class="bubble" id="bubble">NOM NOM!</div>
+    </div>
+    <div class="brand">
+      <h1><span class="a">CompE</span> <span class="b">SNACK BAR</span></h1>
+      <div class="sub">UAlberta Computer Engineering Club</div>
+    </div>
+    <div class="clock">
+      <div class="t" id="clockT">0<span class="colon">:</span>00<small>PM</small></div>
+      <div class="d" id="clockD">---</div>
+    </div>
+  </section>
+
+  <!-- 2. SNACK MENU -->
+  <section class="panel menu">
+    <div class="ph">
+      <h2>&#9654; SNACK SELECT</h2>
+    </div>
+    <div class="cols"><div>ITEM</div><div>PRICE</div><div>LEFT</div><div>STOCK</div></div>
+    <div class="list" id="menu"></div>
+  </section>
+
+  <!-- 3. WEATHER -->
+  <section class="panel weather">
+    <div class="ph"><h2>WEATHER</h2></div>
+    <div class="wx" id="weather"></div>
+  </section>
+
+  <!-- 6. QR -->
+  <section class="panel qr">
+    <div class="ph"><h2>JOIN!</h2></div>
+    <div class="qr-body">
+      <div class="qr-code" id="qr"></div>
+      <div class="qr-txt">
+        <div class="big">Join the <span>club</span></div>
+        <p>Scan for our Linktree: events, Discord &amp; more.</p>
+        <div class="press" id="qrUrl"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. EVENTS -->
+  <section class="panel events">
+    <div class="ph"><h2>UPCOMING</h2></div>
+    <div class="ev-list" id="events"></div>
+  </section>
+
+  <!-- 7. TICKER -->
+  <div class="ticker">
+    <div class="tk-view"><div class="tk-track" id="ticker"></div></div>
+  </div>
+
+  <div class="fx" id="fx"></div>
+</div>
+
+<script>
+/* =====================================================================
+   DATA — the only thing that changes. Later: replace via /api/state.
+   ===================================================================== */
+const DATA = {
+  snacks: [
+    { item: "Ferrero Rocher",           price: 0.75, stock: 15,  lowAt: 5,  sold: 0 },
+    { item: "Buldak",                   price: 4.00, stock: 1,   lowAt: 5,  sold: 1 },
+    { item: "Chips (Variety)",          price: 0.75, stock: 66,  lowAt: 10, sold: 2 },
+    { item: "Diet Pop (355 ml)",        price: 1.50, stock: 19,  lowAt: 5,  sold: 0 },
+    { item: "Gatorade Zero (591 ml)",   price: 2.00, stock: 17,  lowAt: 5,  sold: 0 },
+    { item: "Jones Zero (355ml)",       price: 2.00, stock: 5,   lowAt: 5,  sold: 0 },
+    { item: "Gummies",                  price: 0.25, stock: 72,  lowAt: 10, sold: 0 },
+    { item: "Protein Bars",             price: 2.50, stock: 8,   lowAt: 5,  sold: 0 },
+    { item: "Granola Bars",             price: 1.50, stock: 44,  lowAt: 5,  sold: 0 },
+    { item: "Ice Cream Sandwich",       price: 1.50, stock: 20,  lowAt: 5,  sold: 0 },
+    { item: "Mini Chocolate Bars",      price: 0.50, stock: 71,  lowAt: 10, sold: 0 },
+    { item: "Ramen (Kimchi)",           price: 3.00, stock: 14,  lowAt: 5,  sold: 0 },
+    { item: "Tea",                      price: 0.25, stock: 0,   lowAt: 10, sold: 0 },
+    { item: "Monster Variety (473 ml)", price: 2.99, stock: 13,  lowAt: 5,  sold: 4 },
+    { item: "Oatmeal (Chocolate)",      price: 0.75, stock: 52,  lowAt: 5,  sold: 0 },
+    { item: "Ritz",                     price: 0.99, stock: 33,  lowAt: 5,  sold: 0 },
+    { item: "Builders Protein",         price: 3.00, stock: 16,  lowAt: 5,  sold: 0 }
+  ],
+  events: [
+    { date: "2026-10-30", title: "Arduino Workshop" },
+    { date: "2026-11-04", title: "Exec Meeting" },
+    { date: "2026-11-08", title: "Hack Night" }
+  ],
+  weather: {
+    tempC: -3, condition: "Light Snow",
+    forecast: [
+      { day: "Wed", tempC: 1,  condition: "Cloudy" },
+      { day: "Thu", tempC: -2, condition: "Snow" },
+      { day: "Fri", tempC: 4,  condition: "Sunny" }
+    ]
+  },
+  // Ticker library: strings, or { tag, text }. Shuffled and cycled in batches.
+  ticker: [
+    { tag: "UALBERTA", text: "The University of Alberta was founded in 1908; Henry Marshall Tory was its first president." },
+    { tag: "UALBERTA", text: "UAlberta's first classes were held in 1908 at Queen Alexandra School in Strathcona." },
+    { tag: "UALBERTA", text: "The university motto, \"Quaecumque vera\", means \"Whatsoever things are true\"." },
+    { tag: "UALBERTA", text: "Rutherford Library is named after Alexander Rutherford, Alberta's first premier and a founder of the university." },
+    { tag: "UALBERTA", text: "UAlberta researchers solved checkers in 2007: their program Chinook can never lose." },
+    { tag: "UALBERTA", text: "UAlberta's Cepheus essentially solved heads-up limit Texas hold'em poker in 2015." },
+    { tag: "UALBERTA", text: "DeepStack, built at UAlberta, beat professional poker players at no-limit hold'em in 2017." },
+    { tag: "UALBERTA", text: "UAlberta professor Richard Sutton, a pioneer of reinforcement learning, shared the 2024 Turing Award." },
+    { tag: "UALBERTA", text: "Amii, the Alberta Machine Intelligence Institute, is one of Canada's three national AI institutes." },
+    { tag: "UALBERTA", text: "UAlberta biochemist James Collip helped purify insulin for the first human patients in 1922." },
+    { tag: "UALBERTA", text: "The Edmonton Protocol for islet transplantation was developed at UAlberta around 2000." },
+    { tag: "UALBERTA", text: "Ex-Alta 1, built by UAlberta's AlbertaSat team, was Alberta's first satellite (2017)." },
+    { tag: "UALBERTA", text: "The Butterdome (Universiade Pavilion) was built for the 1983 World University Games." },
+    { tag: "TECH", text: "The first computer \"bug\" was a real moth taped into the Harvard Mark II logbook in 1947." },
+    { tag: "TECH", text: "The Apollo Guidance Computer ran at about 1 MHz with roughly 4 KB of RAM." },
+    { tag: "TECH", text: "The first transistor was demonstrated at Bell Labs in 1947." },
+    { tag: "TECH", text: "Jack Kilby built the first integrated circuit at Texas Instruments in 1958." },
+    { tag: "TECH", text: "The Intel 4004 (1971), the first commercial microprocessor, had about 2,300 transistors." },
+    { tag: "TECH", text: "Gordon Moore made his famous transistor-doubling prediction in 1965." },
+    { tag: "TECH", text: "The 555 timer IC, introduced in 1972, is one of the most-produced chips ever." },
+    { tag: "TECH", text: "The 6502 CPU powered the Apple II, and a variant ran the NES." },
+    { tag: "TECH", text: "ARM originally stood for Acorn RISC Machine." },
+    { tag: "TECH", text: "RISC-V, the open instruction set, started at UC Berkeley in 2010." },
+    { tag: "TECH", text: "ENIAC weighed about 30 tonnes and filled a large room." },
+    { tag: "TECH", text: "Ada Lovelace published what's considered the first algorithm, for Babbage's Analytical Engine, in 1843." },
+    { tag: "TECH", text: "Grace Hopper wrote one of the first compilers, A-0, in 1952." },
+    { tag: "TECH", text: "Richard Hamming invented his error-correcting codes in 1950." },
+    { tag: "TECH", text: "Dennis Ritchie created C at Bell Labs in the early 1970s." },
+    { tag: "TECH", text: "Linus Torvalds released Linux in 1991, and created Git in 2005." },
+    { tag: "TECH", text: "Python is named after Monty Python, not the snake." },
+    { tag: "TECH", text: "The first web page went live at CERN in 1991." },
+    { tag: "TECH", text: "The first computer mouse, built by Douglas Engelbart's team, had a wooden shell." },
+    { tag: "TECH", text: "Ariane 5's first launch (1996) failed due to a 64-bit float to 16-bit integer overflow." },
+    { tag: "TECH", text: "NASA lost the Mars Climate Orbiter in 1999 over a metric vs. imperial unit mix-up." },
+    { tag: "TECH", text: "32-bit Unix time overflows on January 19, 2038." },
+    { tag: "TECH", text: "IEEE 754, the floating-point standard, was published in 1985." },
+    { tag: "TECH", text: "Light in optical fibre travels at about two-thirds of its speed in a vacuum." },
+    { tag: "TECH", text: "One coulomb is about 6.24 × 10^18 electrons." },
+    { tag: "TECH", text: "Arduino was born in Ivrea, Italy, in 2005." },
+    { tag: "TECH", text: "The first Raspberry Pi launched in 2012 for about $35." },
+    { tag: "TECH", text: "Each Pac-Man ghost uses a different chase algorithm." },
+    { tag: "TECH", text: "0x5F3759DF: the magic constant behind the fast inverse square root." },
+    { tag: "TECH", text: "There are 10 types of people: those who get binary and those who don't." }
+  ],
+  // Optional: headlines from your server, e.g. [{ text: "...", source: "The Verge" }]
+  news: [],
+  linktree: "https://linktr.ee/compeclub"
+};
+
+/* Set to true once /api/state exists. */
+/* Live when served by the club server; sample data when the file is opened directly. */
+const LIVE = location.protocol.startsWith("http");
+const POLL_MS = 5000;
+
+/* =====================================================================
+   Helpers
+   ===================================================================== */
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
+const shortName = s => s.replace(/\s*\(.*\)\s*$/, "");
+const splitName = s => { const m = s.match(/^(.*?)\s*\((.*)\)\s*$/); return m ? [m[1], m[2]] : [s, ""]; };
+const MONTHS = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+const MONTHS_LONG = ["JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"];
+const DAYS = ["SUN","MON","TUE","WED","THU","FRI","SAT"];
+const parseDate = s => { const [y,m,d] = s.split("-").map(Number); return new Date(y, m-1, d); };
+const startOfToday = () => { const n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()); };
+
+function stockState(s){
+  if (s.stock <= 0) return "out";
+  if (s.stock <= s.lowAt / 2) return "crit";
+  if (s.stock <= s.lowAt) return "low";
+  return "ok";
+}
+
+/* =====================================================================
+   Widgets
+   ===================================================================== */
+const rowEls = new Map();
+
+function renderMenu(snacks){
+  const el = $("menu");
+  el.style.gridTemplateRows = `repeat(${Math.max(snacks.length,1)},minmax(0,1fr))`;
+  // Text shrinks to fit when the sheet has more than 17 items (and never grows past normal size)
+  el.style.setProperty("--rs", Math.max(0.5, Math.min(1, 15.5 / Math.max(snacks.length, 1))).toFixed(3));
+  rowEls.clear();
+  el.innerHTML = snacks.map((s, i) => {
+    const [name, vol] = splitName(s.item);
+    const st = stockState(s);
+    const fill = Math.max(0, Math.min(1, s.stock / (s.lowAt * 6)));
+    return `<div class="row ${st}" data-i="${i}">
+      <div class="nm">${esc(name)}${vol ? `<span class="vol">${esc(vol)}</span>` : ""}</div>
+      <div class="pr">$${Number(s.price).toFixed(2)}</div>
+      <div class="qty">${s.stock}</div>
+      <div class="bar"><i style="--f:${fill.toFixed(3)}"></i><span class="so">SOLD OUT</span></div>
+    </div>`;
+  }).join("");
+  el.querySelectorAll(".row").forEach(r => rowEls.set(snacks[+r.dataset.i].item, r));
+}
+
+function wxKind(c){
+  c = (c || "").toLowerCase();
+  if (/thunder|storm/.test(c)) return "storm";
+  if (/snow|flurr|sleet|ice/.test(c)) return "snow";
+  if (/rain|drizzle|shower/.test(c)) return "rain";
+  if (/fog|mist|haze|smoke/.test(c)) return "fog";
+  if (/partly|mostly sunny|few clouds|mix/.test(c)) return "partly";
+  if (/cloud|overcast/.test(c)) return "cloud";
+  return "sun";
+}
+function rays(cx, cy, r1, r2){
+  let s = "";
+  for (let k = 0; k < 8; k++){
+    const a = k * Math.PI / 4;
+    s += `<line x1="${(cx+Math.cos(a)*r1).toFixed(1)}" y1="${(cy+Math.sin(a)*r1).toFixed(1)}" x2="${(cx+Math.cos(a)*r2).toFixed(1)}" y2="${(cy+Math.sin(a)*r2).toFixed(1)}"/>`;
+  }
+  return s;
+}
+const CLOUD = `<path class="drift" d="M15 47h33a11 11 0 0 0 1-22 15 15 0 0 0-29-3 12.5 12.5 0 0 0-5 25z" fill="#ded0ff" stroke="#8f6fe0" stroke-width="2"/>`;
+function wxIcon(cond){
+  const k = wxKind(cond);
+  const Y = "#ffe83d", T = "#22f2d4";
+  let g = "";
+  if (k === "sun") g = `<g class="spin" stroke="${Y}" stroke-width="4" stroke-linecap="round">${rays(32,32,19,27)}</g><circle cx="32" cy="32" r="13" fill="${Y}"/>`;
+  if (k === "partly") g = `<g class="spin sm" stroke="${Y}" stroke-width="3.5" stroke-linecap="round">${rays(22,22,13,19)}</g><circle cx="22" cy="22" r="9" fill="${Y}"/><g transform="translate(4 6)">${CLOUD}</g>`;
+  if (k === "cloud") g = `<g transform="translate(0 4)">${CLOUD}</g>`;
+  if (k === "snow") g = `<g transform="translate(0 -6)">${CLOUD}</g><g fill="${T}"><rect class="fall" x="20" y="50" width="5" height="5"/><rect class="fall" x="31" y="54" width="5" height="5"/><rect class="fall" x="42" y="50" width="5" height="5"/></g>`;
+  if (k === "rain") g = `<g transform="translate(0 -6)">${CLOUD}</g><g stroke="${T}" stroke-width="3.5" stroke-linecap="round"><line class="fall" x1="22" y1="49" x2="19" y2="56"/><line class="fall" x1="33" y1="51" x2="30" y2="58"/><line class="fall" x1="44" y1="49" x2="41" y2="56"/></g>`;
+  if (k === "storm") g = `<g transform="translate(0 -6)">${CLOUD}</g><polygon points="33,40 24,54 31,54 27,63 42,47 34,47 38,40" fill="${Y}"/>`;
+  if (k === "fog") g = `<g stroke="#ded0ff" stroke-width="5" stroke-linecap="round"><line class="drift" x1="12" y1="24" x2="52" y2="24"/><line x1="8" y1="34" x2="48" y2="34"/><line class="drift" x1="16" y1="44" x2="56" y2="44"/></g>`;
+  return `<svg viewBox="0 0 64 64">${g}</svg>`;
+}
+const deg = t => `${Math.round(t)}°`;
+
+function renderWeather(w){
+  if (!w) return;
+  $("weather").innerHTML = `
+    <div class="wx-now">
+      <div class="wx-top">${wxIcon(w.condition)}<div class="wx-temp">${Math.round(w.tempC)}<small>°C</small></div></div>
+      <div class="wx-cond">${esc(w.condition)}</div>
+      <div class="wx-city">EDMONTON, AB</div>
+    </div>
+    <div class="fc">${(w.forecast || []).slice(0,3).map(f => `
+      <div><span class="dy">${esc(String(f.day).slice(0,3).toUpperCase())}</span>${wxIcon(f.condition)}<span class="tp">${deg(f.tempC)}</span></div>`).join("")}
+    </div>`;
+}
+
+function renderEvents(events){
+  const t0 = startOfToday();
+  const colors = ["var(--yellow)", "var(--teal)", "var(--pink)", "var(--violet)"];
+  const up = (events || []).map(e => ({ ...e, d: parseDate(e.date) }))
+    .filter(e => e.d >= t0).sort((a, b) => a.d - b.d).slice(0, 4);
+  let html = up.map((e, i) => {
+    const days = Math.round((e.d - t0) / 86400000);
+    const rel = days === 0 ? "TODAY!" : days === 1 ? "TOMORROW" : `IN ${days} DAYS`;
+    return `<div class="evt ${days <= 3 ? "soon" : ""}" style="--c:${colors[i % 4]}">
+      <div class="dt"><b>${MONTHS[e.d.getMonth()]}</b><span>${e.d.getDate()}</span></div>
+      <div><div class="ti">${esc(e.title)}</div><div class="rel">${DAYS[e.d.getDay()]} · ${rel}</div></div>
+    </div>`;
+  }).join("");
+  if (!up.length) html = `<div class="evt filler">No upcoming events</div>`;
+  $("events").style.setProperty("--n", Math.max(up.length, 1));
+  $("events").innerHTML = html;
+}
+
+/* Real QR code: the server renders it as an SVG. Opened as a plain file, the box stays blank. */
+let qrFor = null;
+function renderQR(url){
+  if (url === qrFor) return; qrFor = url;
+  $("qrUrl").textContent = url.replace(/^https?:\/\//, "");
+  $("qr").innerHTML = LIVE ? `<img src="qr.svg?u=${encodeURIComponent(url)}" alt="" style="width:100%;height:100%;display:block">` : "";
+}
+
+/* Ticker: shuffles the fact library + news, plays it in batches.
+   Each batch scrolls fully across, then the next one starts. */
+const TAG_CLASS = { "UALBERTA": "c-g", "TECH": "c-t", "TECH NEWS": "c-p", "NEWS": "c-p" };
+let tickerFacts = [], tickerNews = [], hnNews = [], tickerQueue = [], tickerStarted = false, tickerFirst = true;
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const norm = (x, tag) => typeof x === "string" ? { tag, text: x } : { tag: x.tag || tag, text: x.text + (x.source ? ` (${x.source})` : "") };
+
+function renderTicker(data){
+  tickerFacts = (data.ticker || []).map(x => norm(x, "DID YOU KNOW"));
+  tickerNews = (data.news || []).map(x => norm(x, "TECH NEWS"));
+  if (!tickerStarted){ tickerStarted = true; playTicker(); }
+}
+function refillQueue(){
+  const facts = shuffle(tickerFacts), news = shuffle(tickerNews.concat(hnNews));
+  const q = [];
+  facts.forEach((f, i) => { q.push(f); if (i % 2 === 1 && news.length) q.push(news.shift()); });
+  tickerQueue = q.concat(news);
+}
+function playTicker(){
+  const tr = $("ticker");
+  if (tickerQueue.length < 5) refillQueue();
+  const batch = tickerQueue.splice(0, 5);
+  if (!batch.length) return;
+  tr.classList.remove("run");
+  tr.innerHTML = batch.map(x =>
+    `<span class="tk-item"><b class="${TAG_CLASS[x.tag] || "c-y"}">${esc(x.tag)}</b>${esc(x.text)}</span><span class="tk-sep">&#9670;</span>`).join("");
+  const view = tr.parentElement.offsetWidth;
+  const from = tickerFirst ? 24 : view; // first batch starts on screen, no empty bar at boot
+  tickerFirst = false;
+  tr.style.setProperty("--from", from + "px");
+  tr.style.setProperty("--dur", ((from + tr.scrollWidth) / 110) + "s"); // ~110 px/s
+  void tr.offsetWidth;
+  tr.classList.add("run");
+}
+$("ticker").addEventListener("animationend", playTicker);
+
+/* Live tech headlines from the Hacker News API (CORS-enabled, no key).
+   Set NEWS_HN = false to turn off; fails silently when offline. */
+const NEWS_HN = true;
+async function fetchHN(){
+  try {
+    const ids = await (await fetch("https://hacker-news.firebaseio.com/v0/topstories.json")).json();
+    const items = await Promise.all(ids.slice(0, 10).map(id =>
+      fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then(r => r.json()).catch(() => null)));
+    hnNews = items.filter(i => i && i.title).map(i => ({ tag: "TECH NEWS", text: i.title }));
+  } catch (e) { /* keep previous headlines */ }
+}
+
+/* =====================================================================
+   Mascot + sale celebration
+   ===================================================================== */
+const CHEERS = ["NOM NOM!", "THANKS!", "ENJOY!", "GOOD CHOICE!", "BEEP BOOP, THANKS!", "SNACK ACQUIRED!"];
+const IDLE = ["HUNGRY? I COMPUTE YES.", "01001000 01001001!", "LOW BATTERY? EAT.", "GRAB A SNACK!", "BEEP BOOP."];
+let bubbleTimer = null;
+function say(text, ms = 2600){
+  const b = $("bubble");
+  b.textContent = text; b.classList.add("show");
+  clearTimeout(bubbleTimer);
+  bubbleTimer = setTimeout(() => b.classList.remove("show"), ms);
+}
+let cheerTimer = null;
+function cheer(text){
+  const bot = $("bot");
+  bot.classList.remove("cheer"); void bot.getBoundingClientRect(); bot.classList.add("cheer");
+  clearTimeout(cheerTimer);
+  cheerTimer = setTimeout(() => bot.classList.remove("cheer"), 2400);
+  say(text, 2600);
+}
+
+function stageScale(){ return parseFloat(getComputedStyle($("stage")).getPropertyValue("--s")) || 1; }
+function stagePoint(el){
+  const s = stageScale(), sr = $("stage").getBoundingClientRect(), r = el.getBoundingClientRect();
+  return { x: (r.left - sr.left) / s, y: (r.top - sr.top) / s, w: r.width / s, h: r.height / s };
+}
+
+const CONFETTI_COLORS = ["#ffe83d", "#ff3fa4", "#22f2d4", "#a46bff", "#ffffff", "#ffae2b"];
+function confetti(x, y, w){
+  const fx = $("fx"), layer = document.createElement("div");
+  layer.style.cssText = "position:absolute;inset:0";
+  const N = 90;
+  for (let i = 0; i < N; i++){
+    const p = document.createElement("i");
+    p.className = "cf";
+    const sz = 8 + Math.random() * 12, strip = Math.random() < .4;
+    const x1 = (Math.random() - .5) * 1100, y1 = -(150 + Math.random() * 550);
+    p.style.cssText =
+      `--x0:${x + Math.random() * w}px;--y0:${y}px;--w:${strip ? sz * .5 : sz}px;--h:${strip ? sz * 1.8 : sz}px;` +
+      `--c:${CONFETTI_COLORS[i % CONFETTI_COLORS.length]};--x1:${x1}px;--y1:${y1}px;` +
+      `--x2:${x1 * 1.35}px;--y2:${y1 + 700 + Math.random() * 600}px;--r:${(Math.random() - .5) * 1440}deg;` +
+      `--d:${1.8 + Math.random() * 1.2}s`;
+    layer.appendChild(p);
+  }
+  fx.appendChild(layer);
+  setTimeout(() => layer.remove(), 3200);
+}
+function floatText(text, x, y){
+  const t = document.createElement("div");
+  t.className = "plus"; t.textContent = text;
+  t.style.left = x + "px"; t.style.top = y + "px";
+  $("fx").appendChild(t);
+  setTimeout(() => t.remove(), 1700);
+}
+
+function celebrate(sales){
+  sales.forEach((s, k) => setTimeout(() => {
+    const row = rowEls.get(s.item);
+    if (row){
+      row.classList.remove("flash"); void row.offsetWidth; row.classList.add("flash");
+      setTimeout(() => row.classList.remove("flash"), 1600);
+      const p = stagePoint(row);
+      confetti(p.x, p.y + p.h / 2, p.w);
+      floatText(s.qty > 1 ? `+${s.qty} SOLD!` : "+1 SALE!", p.x + p.w * 0.62, p.y - 6);
+    }
+    cheer(CHEERS[Math.floor(Math.random() * CHEERS.length)]);
+  }, k * 700));
+}
+
+/* =====================================================================
+   render(data) — draws everything, detects sales vs. previous data
+   ===================================================================== */
+let prev = null;
+function detectSales(oldD, newD){
+  if (!oldD) return [];
+  const before = new Map(oldD.snacks.map(s => [s.item, s.stock]));
+  return newD.snacks
+    .filter(s => before.has(s.item) && s.stock < before.get(s.item))
+    .map(s => ({ item: s.item, qty: before.get(s.item) - s.stock }));
+}
+function render(data){
+  const sales = detectSales(prev, data);
+  renderMenu(data.snacks || []);
+  renderWeather(data.weather);
+  renderEvents(data.events);
+  renderQR(data.linktree || "");
+  renderTicker(data);
+  if (sales.length) celebrate(sales);
+  prev = structuredClone(data);
+}
+
+/* =====================================================================
+   Clock, scaling, polling, debug
+   ===================================================================== */
+let lastDay = null;
+function tick(){
+  const n = new Date();
+  let h = n.getHours(); const ap = h >= 12 ? "PM" : "AM"; h = h % 12 || 12;
+  const mm = String(n.getMinutes()).padStart(2, "0");
+  $("clockT").innerHTML = `${h}<span class="colon">:</span>${mm}<small>${ap}</small>`;
+  $("clockD").textContent = `${DAYS[n.getDay()]} · ${MONTHS[n.getMonth()]} ${n.getDate()} · ${n.getFullYear()}`;
+  if (lastDay !== n.getDate()){ // midnight rollover: refresh date-based widgets
+    if (lastDay !== null && prev){ renderEvents(prev.events); }
+    lastDay = n.getDate();
+  }
+}
+function fit(){
+  const s = Math.min(innerWidth / 1200, innerHeight / 1920);
+  $("stage").style.setProperty("--s", s);
+}
+function makeStars(){
+  const sh = [];
+  for (let i = 0; i < 60; i++){
+    const c = ["#ffe83d","#ff3fa4","#22f2d4","#ffffff"][i % 4];
+    sh.push(`${Math.round(Math.random()*1200)}px ${Math.round(Math.random()*1920)}px 0 ${Math.random() < .2 ? 1 : 0}px ${c}`);
+  }
+  $("stars").style.boxShadow = sh.join(",");
+}
+
+let liveSeen = false; // first live load replaces sample data without a fake "sale"
+async function poll(){
+  try {
+    const r = await fetch("/api/state", { cache: "no-store" });
+    if (r.ok){ const d = await r.json(); if (!liveSeen){ liveSeen = true; prev = null; } render({ ...DATA, ...d }); }
+  } catch (e) { /* keep showing last good data */ }
+}
+
+// Hidden debug key: "S" simulates a random sale
+addEventListener("keydown", e => {
+  if (e.key.toLowerCase() !== "s" || !prev) return;
+  const next = structuredClone(prev);
+  const pool = next.snacks.filter(s => s.stock > 0);
+  if (!pool.length) return;
+  const pick = pool[Math.floor(Math.random() * pool.length)];
+  pick.stock -= 1; pick.sold += 1;
+  render(next);
+});
+
+addEventListener("resize", fit);
+fit(); makeStars();
+render(DATA);
+tick(); setInterval(tick, 1000);
+setInterval(() => { if (!$("bot").classList.contains("cheer")) say(IDLE[Math.floor(Math.random() * IDLE.length)], 3000); }, 45000);
+if (NEWS_HN){ fetchHN(); setInterval(fetchHN, 30 * 60 * 1000); }
+if (LIVE){ poll(); setInterval(poll, POLL_MS); }
+</script>
+</body>
+</html>
