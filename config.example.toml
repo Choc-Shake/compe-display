@@ -9,6 +9,7 @@ refresh_seconds = 30
 
 [calendar]
 ical_url = ""                # Google Calendar > Settings > "Secret address in iCal format"
+refresh_seconds = 120        # how often to check for new events
 
 [weather]
 lat = 53.5232                # UAlberta, Edmonton

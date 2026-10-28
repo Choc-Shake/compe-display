@@ -129,7 +129,7 @@ STATE = {"snacks": [], "events": [], "weather": None, "linktree": LINKTREE,
          "source": "sheet" if SHEET.get("id") else "sample", "updated": None}
 SOURCES = [  # (key, fetcher, seconds between refreshes)
     ("snacks", fetch_snacks, SHEET.get("refresh_seconds", 30)),
-    ("events", fetch_events, 600),
+    ("events", fetch_events, CAL.get("refresh_seconds", 120)),
     ("weather", fetch_weather, 900),
 ]
 
