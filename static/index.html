@@ -210,7 +210,7 @@ body{font-family:var(--body);color:var(--ink);-webkit-font-smoothing:antialiased
   35%{transform:translate(var(--x1),var(--y1)) rotate(calc(var(--r) * .4));opacity:1}
   100%{transform:translate(var(--x2),var(--y2)) rotate(var(--r));opacity:0}}
 .rain{position:absolute;top:-40px;animation:rain linear forwards;will-change:transform}
-@keyframes rain{to{transform:translate(var(--sway),1990px) rotate(var(--r))}}
+@keyframes rain{to{transform:translate(var(--sway),2500px) rotate(var(--r))}}
 .plus{position:absolute;font-family:var(--pixel);font-size:34px;color:var(--yellow);white-space:nowrap;
   text-shadow:4px 4px 0 var(--pink);animation:rise 1.6s ease-out forwards}
 @keyframes rise{0%{transform:translate(-50%,10px) scale(.6);opacity:0}20%{transform:translate(-50%,-20px) scale(1.15);opacity:1}100%{transform:translate(-50%,-120px) scale(1);opacity:0}}
@@ -718,7 +718,7 @@ async function poll(){
 let partyUntil = 0;
 function party(){
   if (Date.now() < partyUntil) return;
-  partyUntil = Date.now() + 4200;
+  partyUntil = Date.now() + 5000;
   const layer = document.createElement("div");
   layer.style.cssText = "position:absolute;inset:0";
   for (let i = 0; i < 160; i++){
@@ -726,13 +726,13 @@ function party(){
     p.className = "rain";
     const sz = 8 + Math.random() * 12, strip = Math.random() < .4;
     p.style.cssText =
-      `left:${Math.random() * 1200}px;width:${strip ? sz * .5 : sz}px;height:${strip ? sz * 1.8 : sz}px;` +
+      `left:${Math.random() * 1200}px;top:${-40 - Math.random() * 500}px;width:${strip ? sz * .5 : sz}px;height:${strip ? sz * 1.8 : sz}px;` +
       `background:${CONFETTI_COLORS[i % CONFETTI_COLORS.length]};--sway:${(Math.random() - .5) * 240}px;` +
-      `--r:${(Math.random() - .5) * 1080}deg;animation-duration:${1.6 + Math.random() * .9}s;animation-delay:${Math.random() * 1.8}s`;
+      `--r:${(Math.random() - .5) * 1080}deg;animation-duration:${2.6 + Math.random() * 1.2}s;animation-delay:${Math.random() * 1.5}s`;
     layer.appendChild(p);
   }
   $("fx").appendChild(layer);
-  setTimeout(() => layer.remove(), 4500);
+  setTimeout(() => layer.remove(), 5400);
   cheer(CHEERS[Math.floor(Math.random() * CHEERS.length)]);
 }
 addEventListener("keydown", e => { if (e.key.toLowerCase() === "s") party(); });
